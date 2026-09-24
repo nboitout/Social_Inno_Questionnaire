@@ -62,7 +62,7 @@ Your answers will help us adapt the upcoming AI workshop and mentoring sessions 
 
 **RO**
 
-Răspunsurile tale ne vor ajuta să adaptăm workshopul AI și sesiunile de mentorat la experiența, provocările de business și așteptările tale.
+Răspunsurile tale ne vor ajuta să adaptăm workshopul de AI și sesiunile de mentorat la experiența, provocările de business și așteptările tale.
 
 ### homepage.practical-information
 
@@ -116,7 +116,7 @@ YOUR NEXT STEP.
 **RO**
 
 EXPERIENȚA TA.
-URMĂTORUL PAS.
+PASUL TĂU URMĂTOR.
 
 ### ui.artNote
 
@@ -126,7 +126,7 @@ A WORKSHOP SHAPED AROUND YOU
 
 **RO**
 
-UN ATELIER ADAPTAT NEVOILOR TALE
+UN WORKSHOP ADAPTAT NEVOILOR TALE
 
 The CTA appends → and opens the participant identification form before the ten main questions. “Continue” appears when there is saved progress. The three cards reuse the section text in section 3.
 
@@ -160,7 +160,7 @@ Skip to content
 
 **RO**
 
-Mergi la conținut
+Sari la conținut
 
 ### ui.admin
 
@@ -220,7 +220,7 @@ We collect your first name, family name and company name to identify you as a pr
 
 **RO**
 
-Colectăm prenumele, numele de familie și denumirea companiei pentru a te identifica drept participant la program și a asocia răspunsurile cu tine și cu afacerea ta. Aceste date și răspunsurile tale sunt păstrate împreună în Google Sheets și consultate în zona de administrare protejată pentru pregătirea workshopului și a sesiunilor de mentorat. Un identificator aleatoriu de sesiune ajută la numărarea vizitelor și completărilor; chestionarul nu stochează adresa IP. Datele tale și progresul sunt salvate în acest browser. Această ciornă expiră după 7 zile și este șters din browser la următoarea deschidere sau la trimitere. Nu include alte date personale sau informații confidențiale despre companie în răspunsurile libere.
+Colectăm prenumele, numele de familie și denumirea companiei pentru a te identifica drept participant la program și a asocia răspunsurile cu tine și cu afacerea ta. Aceste date și răspunsurile tale sunt păstrate împreună în Google Sheets și consultate în zona de administrare protejată pentru pregătirea workshopului și a sesiunilor de mentorat. Un ID de sesiune generat aleatoriu în browser ne ajută să numărăm vizitele și completările; chestionarul nu stochează adresa ta IP. Datele și progresul tău sunt salvate în acest browser. Această ciornă expiră după 7 zile: este ștearsă la prima deschidere a chestionarului după expirare sau imediat după trimiterea răspunsurilor. Nu include alte date personale sau informații confidențiale despre companie în câmpurile de text liber.
 
 ### ui.clear
 
@@ -266,7 +266,7 @@ Social Innovation Solutions · Back to the introduction
 
 **RO**
 
-Social Innovation Solutions · Înapoi la prezentare
+Social Innovation Solutions · Înapoi la pagina de start
 
 ## Participant identification — before Q1
 
@@ -290,7 +290,7 @@ Please enter your details so we can connect your answers to you and your company
 
 **RO**
 
-Completează datele tale pentru a putea asocia răspunsurile cu tine și cu compania ta și a pregăti workshopul și sesiunile de mentorat.
+Completează-ți datele ca să putem asocia răspunsurile cu tine și cu compania ta și să pregătim workshopul și sesiunile de mentorat.
 
 ### ui.participantHeading
 
@@ -475,7 +475,7 @@ The practical session would show how AI can help you explore real business data,
 
 **RO**
 
-Sesiunea practică ar arăta cum te poate ajuta AI să explorezi date reale de afaceri, să identifici tipare și factori de influență, să creezi analize și vizualizări utile și să iei decizii de afaceri mai bine fundamentate.
+Sesiunea practică ar arăta cum te poate ajuta AI să explorezi date reale de business, să identifici tipare și factori determinanți, să creezi analize și vizualizări utile și să iei decizii de business mai bine fundamentate.
 
 ### Q1 — ai_tools
 
@@ -495,7 +495,7 @@ Select all that apply, then indicate how you access each tool.
 
 **RO**
 
-Selectează toate variantele care se aplică, apoi precizează cum ai acces la fiecare instrument.
+Selectează toate variantele potrivite, apoi precizează cum ai acces la fiecare instrument.
 
 ### ai_tools.chatgpt
 
@@ -635,7 +635,7 @@ AI is part of my workflow throughout much of the day
 
 **RO**
 
-AI face parte din modul meu de lucru în mare parte din zi
+AI face parte din fluxul meu de lucru o mare parte din zi
 
 ### Q3 — ai_data_access
 
@@ -645,7 +645,7 @@ Does your AI have access to your work files or data?
 
 **RO**
 
-Are AI acces la fișierele sau datele tale de lucru?
+Instrumentele AI pe care le folosești au acces la fișierele sau datele tale de lucru?
 
 ### Q3 helper
 
@@ -655,7 +655,7 @@ We mean that you have connected or granted AI access to files, folders, cloud st
 
 **RO**
 
-Ne referim la faptul că ai conectat AI sau i-ai acordat acces la fișiere, foldere, stocare în cloud sau alte surse de lucru — în loc să încarci manual câte un fișier. Selectează toate variantele care se aplică.
+Adică ai conectat AI-ul la fișiere, foldere, stocare în cloud sau alte surse de lucru ori i-ai dat acces la ele — nu doar încarci manual câte un fișier. Selectează toate variantele potrivite.
 
 ### ai_data_access.manual_chat
 
@@ -665,7 +665,7 @@ No — I mainly use AI through chat and provide information manually
 
 **RO**
 
-Nu — folosesc AI în principal prin chat și ofer informațiile manual
+Nu — folosesc AI în principal prin chat și introduc manual informațiile
 
 ### ai_data_access.manual_upload
 
@@ -685,7 +685,7 @@ Yes — AI can access some of my cloud files or storage
 
 **RO**
 
-Da — AI poate accesa unele dintre fișierele mele sau spațiile de stocare din cloud
+Da — AI poate accesa o parte din fișierele sau spațiile mele de stocare în cloud
 
 ### Description
 
@@ -755,7 +755,7 @@ I mainly do the work myself and ask AI questions or use it for specific tasks wh
 
 **RO**
 
-În general, lucrez singur și pun întrebări AI sau îl folosesc pentru anumite sarcini, când am nevoie.
+Fac eu cea mai mare parte a muncii și, când am nevoie, îi pun întrebări AI-ului sau îl folosesc pentru sarcini punctuale.
 
 ### ai_working_mode.ai_assistant
 
@@ -775,7 +775,7 @@ I do the work myself, but AI frequently helps me write, search, analyse, summari
 
 **RO**
 
-Lucrez singur, dar AI mă ajută frecvent să scriu, să caut informații, să analizez, să rezum sau să generez idei.
+Fac eu munca, dar AI mă ajută frecvent să scriu, să caut informații, să analizez, să rezum sau să generez idei.
 
 ### ai_working_mode.ai_first_some_tasks
 
@@ -785,7 +785,7 @@ AI-first for some tasks
 
 **RO**
 
-Încep cu AI pentru unele sarcini
+AI-first pentru unele sarcini
 
 ### ai_working_mode.ai_first_some_tasks.description
 
@@ -795,7 +795,7 @@ For some work, I start with AI. I give it the objective and relevant information
 
 **RO**
 
-Pentru unele sarcini, încep cu AI. Îi dau obiectivul și informațiile sau fișierele relevante, îl las să producă un prim rezultat, apoi îl verific și îl îmbunătățesc.
+Pentru unele sarcini, pornesc de la AI: îi dau obiectivul și informațiile sau fișierele relevante, îl las să producă prima variantă, apoi o verific și o îmbunătățesc.
 
 ### ai_working_mode.ai_first_default
 
@@ -805,7 +805,7 @@ AI-first by default
 
 **RO**
 
-De regulă, încep cu AI
+AI-first, de regulă
 
 ### ai_working_mode.ai_first_default.description
 
@@ -815,7 +815,7 @@ Whenever appropriate, I ask AI to perform the work. My role is increasingly to s
 
 **RO**
 
-Când este potrivit, îi cer AI să facă munca. Rolul meu este tot mai mult să stabilesc obiectivul, să ofer context, să ghidez, să verific și să iau decizii, în loc să creez sau să editez totul manual.
+Ori de câte ori are sens, îi cer AI-ului să facă munca. Rolul meu este tot mai mult să stabilesc obiectivul, să dau context, să ghidez, să verific și să decid, în loc să creez sau să editez totul manual.
 
 ### ai_working_mode.multi_step_agentic
 
@@ -835,7 +835,7 @@ I regularly let AI perform multi-step work across files, tools or processes and 
 
 **RO**
 
-Las în mod regulat AI să lucreze în mai mulți pași, folosind fișiere, instrumente sau procese, pentru a produce rezultate finale sau a executa părți dintr-un flux de lucru.
+Las în mod regulat AI-ul să execute sarcini în mai mulți pași, lucrând cu fișiere, instrumente sau procese, pentru a livra rezultate finalizate sau a executa părți dintr-un flux de lucru.
 
 ### Q5 — ai_tasks_last_3_months
 
@@ -845,7 +845,7 @@ What have you personally asked AI to do during the last 3 months?
 
 **RO**
 
-Ce i-ai cerut personal AI să facă în ultimele 3 luni?
+Ce i-ai cerut tu AI-ului să facă în ultimele 3 luni?
 
 ### ai_tasks_last_3_months.questions_search
 
@@ -875,7 +875,7 @@ Translate content
 
 **RO**
 
-Să traducă materiale
+Să traducă conținut
 
 ### ai_tasks_last_3_months.analyse_documents
 
@@ -895,7 +895,7 @@ Analyse a spreadsheet or business data
 
 **RO**
 
-Să analizeze un tabel sau date de afaceri
+Să analizeze un spreadsheet sau date de business
 
 ### ai_tasks_last_3_months.presentations
 
@@ -945,7 +945,7 @@ Automate a recurring workflow
 
 **RO**
 
-Să automatizeze un proces recurent
+Să automatizeze un flux de lucru recurent
 
 ### ai_tasks_last_3_months.build_app_agent
 
@@ -1015,7 +1015,7 @@ AI is systematically used in some teams or business processes
 
 **RO**
 
-AI este folosit sistematic în anumite echipe sau procese
+AI este folosit sistematic în anumite echipe sau procese de business
 
 ### company_ai_adoption.production_workflows
 
@@ -1025,7 +1025,7 @@ We have AI-powered workflows or automations in production
 
 **RO**
 
-Avem fluxuri de lucru sau automatizări cu AI folosite efectiv în activitate
+Avem în producție fluxuri de lucru sau automatizări bazate pe AI
 
 ### company_ai_adoption.embedded_core
 
@@ -1309,7 +1309,7 @@ If you could ask one important question about your business and have AI analyse 
 
 **RO**
 
-Dacă ai putea pune o întrebare importantă despre afacerea ta, iar AI ar analiza datele pentru a te ajuta să răspunzi, care ar fi întrebarea?
+Dacă ai putea pune o singură întrebare importantă despre afacerea ta, iar AI ți-ar analiza datele ca să te ajute să găsești răspunsul, ce ai întreba?
 
 ### business_data_question.helper
 
@@ -1339,7 +1339,7 @@ Which customers are most valuable?
 
 **RO**
 
-Care sunt cei mai valoroși clienți?
+Care sunt clienții noștri cei mai valoroși?
 
 ### business_data_question.example.3
 
@@ -1349,7 +1349,7 @@ What drives our sales?
 
 **RO**
 
-Ce factori influențează vânzările?
+Ce factori ne influențează vânzările?
 
 ### business_data_question.example.4
 
@@ -1379,7 +1379,7 @@ Is there anything else you would particularly like us to cover during the AI wor
 
 **RO**
 
-Mai este ceva ce ți-ai dori în mod special să abordăm în workshopul AI?
+Mai este ceva ce ți-ai dori în mod special să abordăm în workshopul de AI?
 
 ### workshop_other_expectation.helper
 
@@ -1389,7 +1389,7 @@ You can mention another AI topic, task, process, business problem or question th
 
 **RO**
 
-Poți menționa o altă temă legată de AI, o sarcină, un proces, o problemă de afaceri sau o întrebare pe care ai vrea să o abordăm.
+Poți menționa o altă temă legată de AI, o sarcină, un proces, o problemă de business sau o întrebare pe care ai vrea să o abordăm.
 
 ## 5. Question controls, prompts and accessibility
 
@@ -1423,7 +1423,7 @@ Your progress is saved in this browser. You can go back without losing your answ
 
 **RO**
 
-Progresul se salvează în acest browser. Poți reveni fără să pierzi răspunsurile.
+Progresul se salvează în acest browser. Poți reveni la întrebările anterioare fără să pierzi răspunsurile.
 
 ### ui.home
 
@@ -1433,7 +1433,7 @@ Back to the introduction
 
 **RO**
 
-Înapoi la prezentare
+Înapoi la pagina de start
 
 ### ui.question
 
@@ -1473,7 +1473,7 @@ Select all that apply.
 
 **RO**
 
-Selectează toate variantele care se aplică.
+Selectează toate variantele potrivite.
 
 ### ui.other
 
@@ -1483,7 +1483,7 @@ Other tool or application name
 
 **RO**
 
-Numele celuilalt instrument sau al aplicației
+Numele instrumentului sau al aplicației
 
 ### ui.access
 
@@ -1513,7 +1513,7 @@ Up to 3,000 characters. Please avoid personal or confidential information.
 
 **RO**
 
-Cel mult 3.000 de caractere. Evită informațiile personale sau confidențiale.
+Maximum 3.000 de caractere. Evită informațiile personale sau confidențiale.
 
 ### ui.placeholder
 
@@ -1533,7 +1533,7 @@ If you do not use AI yet, you can leave this question unanswered and continue.
 
 **RO**
 
-Dacă nu folosești încă AI, poți lăsa această întrebare fără răspuns și poți continua.
+Dacă nu folosești încă AI, poți sări peste această întrebare.
 
 ### ui.back
 
@@ -1593,7 +1593,7 @@ Skip this question
 
 **RO**
 
-Lasă fără răspuns
+Sari peste această întrebare
 
 ### tool-access.composed-label
 
@@ -1639,7 +1639,7 @@ Does everything look right?
 
 **RO**
 
-Totul arată bine?
+Totul este corect?
 
 ### ui.reviewIntro
 
@@ -1649,7 +1649,7 @@ Select Edit to view or change a full answer before finishing.
 
 **RO**
 
-Selectează Modifică pentru a vedea sau schimba un răspuns complet înainte de a încheia.
+Apasă „Modifică” pentru a vedea integral sau a schimba un răspuns înainte de trimitere.
 
 ### ui.edit
 
@@ -1771,7 +1771,7 @@ Thank you for your perspective.
 
 **RO**
 
-Îți mulțumim pentru perspectiva ta.
+Îți mulțumim că ți-ai împărtășit perspectiva.
 
 ### ui.savedBody
 
@@ -1781,7 +1781,7 @@ Your responses have been saved. They will help us prepare a workshop grounded in
 
 **RO**
 
-Răspunsurile tale au fost salvate. Ne vor ajuta să pregătim un atelier bazat pe experiența ta reală și pe nevoile afacerii tale.
+Răspunsurile tale au fost salvate. Ne vor ajuta să pregătim un workshop construit pe experiența ta reală și pe nevoile afacerii tale.
 
 ### ui.previewComplete
 
@@ -1821,7 +1821,7 @@ Back to the introduction
 
 **RO**
 
-Înapoi la prezentare
+Înapoi la pagina de start
 
 ## 8. Validation and recoverable errors
 
@@ -1833,7 +1833,7 @@ We could not save your response. Your answers are still saved in this browser. P
 
 **RO**
 
-Nu am putut salva răspunsul. Răspunsurile sunt păstrate în acest browser. Încearcă din nou.
+Nu am putut salva răspunsurile. Ele sunt păstrate în continuare în acest browser. Încearcă din nou.
 
 ### ui.versionError
 
@@ -1883,7 +1883,7 @@ Please enter a response (up to 3,000 characters).
 
 **RO**
 
-Completează un răspuns de cel mult 3.000 de caractere.
+Scrie un răspuns (maximum 3.000 de caractere).
 
 ### validation.selection
 
@@ -1893,7 +1893,7 @@ Select at least one valid option. “None” cannot be combined with other choic
 
 **RO**
 
-Selectează cel puțin o variantă validă. Opțiunile „Niciunul/Niciuna” nu pot fi combinate cu alte variante.
+Selectează cel puțin o variantă validă. Varianta „Niciunul” / „Niciuna dintre acestea” nu poate fi combinată cu alte variante.
 
 ### validation.access
 
@@ -1913,7 +1913,7 @@ Enter the name of the other tool or application (up to 120 characters).
 
 **RO**
 
-Introdu numele celuilalt instrument sau al aplicației (cel mult 120 de caractere).
+Introdu numele instrumentului sau al aplicației (maximum 120 de caractere).
 
 ### validation.invalid
 
@@ -2257,7 +2257,7 @@ Your experience shapes the workshop.
 
 **RO**
 
-Experiența ta dă direcția atelierului.
+Experiența ta dă direcția workshopului.
 
 ### unused.ui.whyBody
 
@@ -2267,7 +2267,7 @@ Your answers will help the Lead AI Expert prepare the mentoring programme and ou
 
 **RO**
 
-Răspunsurile tale îl ajută pe expertul AI coordonator să pregătească programul de mentorat și atelierul de AI de 3 ore pornind de la nevoi reale de afaceri.
+Răspunsurile tale îl vor ajuta pe Lead AI Expert să pregătească programul de mentorat și workshopul de AI de 3 ore pornind de la nevoi reale de business.
 
 ### unused.ui.simple
 
@@ -2336,4 +2336,4 @@ For the workshop, participants should use an appropriately sanitized or anonymiz
 
 **RO**
 
-Pentru workshop, participanții ar trebui să folosească un set de date curățat de informații sensibile sau anonimizat corespunzător. Nu include parole, credențiale, date personale inutile sau informații confidențiale care nu ar trebui partajate cu mediul AI folosit în sesiune.
+Pentru workshop, participanții ar trebui să folosească un set de date curățat de informații sensibile sau anonimizat corespunzător. Nu include parole, credențiale, date personale inutile sau informații confidențiale care nu ar trebui partajate cu platforma AI folosită în sesiune.

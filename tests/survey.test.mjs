@@ -63,7 +63,8 @@ test('conditional workshop questions appear only when applicable and stale answe
 });
 test('unchanged initial questions preserve v1 wording and archived records retain old questions',async()=>{
  const old=(await import('../public/survey-v1.js')).survey;
- for(const i of [0,1,3,4,5])for(const key of ['id','label','type','options'])assert.deepEqual(survey.questions[i][key],old.questions[i][key]);
+ const english=value=>JSON.parse(JSON.stringify(value,(key,v)=>key==='ro'?undefined:v));
+ for(const i of [0,1,3,4,5])for(const key of ['id','label','type','options'])assert.deepEqual(english(survey.questions[i][key]),english(old.questions[i][key]));
  assert.equal(old.questions.length,8);assert.ok(responseHeaders.includes('tedious_task'));assert.ok(responseHeaders.includes('workshop_expectation'));
 });
 
