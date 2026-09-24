@@ -15,10 +15,6 @@ h1,h2,h3{letter-spacing:-.025em}
 .sis-logo{width:124px}
 .brand-caption,.edition,.eyebrow,.art-top{font-size:11px;letter-spacing:.16em}
 .eyebrow .line{background:var(--olive);width:32px;height:2px}
-.preview-banner{font-size:11px;color:#55573d}
-.preview-banner>span:last-child{font-size:12px}
-.status-dot{background:#b3ad24;box-shadow:0 0 0 4px #f3ed5766;animation:pulse 2.4s ease-in-out infinite}
-@keyframes pulse{50%{box-shadow:0 0 0 7px #f3ed5700}}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
 .hero{position:relative}
 .hero h1{letter-spacing:-.035em;font-weight:700;line-height:1}
@@ -118,7 +114,6 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--olive),#
  body:is([data-page=participant],[data-page=question],[data-page=review]) .sis-logo{width:88px}
  body:is([data-page=participant],[data-page=question],[data-page=review]) main{min-height:0;max-width:1440px;padding:0 28px}
  body:is([data-page=participant],[data-page=question],[data-page=review]) .site-footer{display:none}
- body:is([data-page=participant],[data-page=question],[data-page=review]) .preview-banner{padding:6px 0}
  .survey-layout{max-width:none;grid-template-columns:180px minmax(0,1fr);gap:24px;padding:12px 0}
  .survey-sidebar h2{font-size:23px;margin-top:10px}
  .steps{margin:24px 0}.steps li{gap:9px;margin-bottom:18px}.steps strong{font-size:14px}.steps small{font-size:11px}.steps li>span{flex-shrink:0;width:30px;height:30px}

@@ -2,7 +2,6 @@ const pair=(en,ro)=>({en,ro});
 export const copy={
  participantTitle:pair('Tell us who you are','Spune-ne cine ești'),participantIntro:pair('Please enter your details so we can connect your answers to you and your company and prepare your workshop and mentoring sessions.','Completează datele tale pentru a putea asocia răspunsurile cu tine și cu compania ta și a pregăti workshopul și sesiunile de mentorat.'),participantHeading:pair('PARTICIPANT DETAILS','DATELE PARTICIPANTULUI'),participantContinue:pair('Continue to the questionnaire','Continuă la chestionar'),participantReview:pair('Participant details','Datele participantului'),participantSave:pair('Back to review','Înapoi la verificare'),
 
- preview:pair('PREVIEW','PREVIZUALIZARE'),previewNote:pair('Responses are not being collected yet','Răspunsurile nu sunt colectate încă'),
  hero:pair('How do you work','Cum lucrezi'),heroAccent:pair('with AI today?','astăzi cu AI?'),
  intro:pair('Tell us how you currently use AI — in your own work and across your company.','Spune-ne cum folosești AI în prezent — în activitatea ta și în compania ta.'),
  purposeBefore:pair('Your answers will help us adapt the upcoming','Răspunsurile tale ne vor ajuta să adaptăm'),purposeFocus:pair('AI workshop and mentoring sessions','workshopul AI și sesiunile de mentorat'),purposeAfter:pair('to your experience, business challenges and expectations.','la experiența, provocările de business și așteptările tale.'),
