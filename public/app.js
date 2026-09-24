@@ -43,13 +43,16 @@ function participantPage(){
  form.onsubmit=e=>{e.preventDefault();participant=Object.fromEntries(participantFields.map(f=>[f.id,form.elements[f.id].value.trim()]));const error=participantError(participant,language);if(error){document.querySelector('#error').textContent=error;return;}save();page=editingParticipant?'review':'question';editingParticipant=false;render();focusTitle();};
  document.querySelector('#participant-back').onclick=()=>{page=editingParticipant?'review':'home';editingParticipant=false;render();focusTitle();};
 }
+function renderOtherTools(value){
+ return '<div class="other-tools">'+(value?.others||[]).map((o,i)=>`<div class="other-tool-row"><label>${t('other')} ${i+1}<input id="other-tool-${i}" data-other-name="${i}" type="text" maxlength="120" value="${esc(o.name)}" autocomplete="off"></label><label>${t('otherAccess')}<select data-other-access="${i}"><option value="">${t('choose')}</option>${accessTypes.map(a=>`<option value="${a.value}" ${o.access===a.value?'selected':''}>${localized(a.label,language)}</option>`).join('')}</select></label><button type="button" class="text-button" data-remove-other="${i}" aria-label="${t('removeOther')} ${i+1}">×</button></div>`).join('')+`<button type="button" id="add-other" class="text-button" ${value?.others?.length>=20?'disabled':''}>+ ${t('addOther')}</button></div>`;
+}
 function renderFields(q){
  const value=answers[q.id];
  if(q.type==='text')return `<textarea id="answer" name="answer" maxlength="${q.maxLength}" rows="7" aria-label="${esc(q.label)}" aria-describedby="question-help" aria-required="${requiredQuestion(q,answers)}" placeholder="${t('placeholder')}">${esc(value||'')}</textarea><p class="field-hint">${t('textHint')}</p>`;
  const values=q.type==='multi'?selectedValues(q,value):[value];
  return `<div class="options ${q.id==='ai_tasks_last_3_months'?'compact-options':''}">${q.options.map(o=>{
   const checked=values.includes(o.value);
-  return `<div class="field-option"><label class="option ${checked?'selected':''}"><input id="choice-${o.value}" type="${q.type==='multi'?'checkbox':'radio'}" name="answer" value="${o.value}" ${checked?'checked':''}><span class="option-copy"><span class="option-name">${esc(o.label)}</span>${o.description?`<span class="option-description">${esc(o.description)}</span>`:''}</span></label>${q.structured&&checked&&!o.exclusive?`<div class="option-details">${q.other&&o.value==='other'?`<label for="other-name">${q.id==='workshop_dataset_type'?t('dataOther'):t('other')}</label><input id="other-name" type="text" maxlength="120" value="${esc(value?.other||'')}" autocomplete="off">`:''}${q.access?`<label for="access-${o.value}">${t('access')} ${esc(o.value==='other'?o.label:o.label)}?</label><select id="access-${o.value}" data-access="${o.value}"><option value="">${t('choose')}</option>${accessTypes.map(a=>`<option value="${a.value}" ${value?.access?.[o.value]===a.value?'selected':''}>${localized(a.label,language)}</option>`).join('')}</select>`:''}</div>`:''}</div>`;
+  return `<div class="field-option"><label class="option ${checked?'selected':''}"><input id="choice-${o.value}" type="${q.type==='multi'?'checkbox':'radio'}" name="answer" value="${o.value}" ${checked?'checked':''}><span class="option-copy"><span class="option-name">${esc(o.label)}</span>${o.description?`<span class="option-description">${esc(o.description)}</span>`:''}</span></label>${q.structured&&checked&&!o.exclusive?`<div class="option-details">${q.multipleOther&&o.value==='other'?renderOtherTools(value):''}${q.other&&!q.multipleOther&&o.value==='other'?`<label for="other-name">${q.id==='workshop_dataset_type'?t('dataOther'):t('other')}</label><input id="other-name" type="text" maxlength="120" value="${esc(value?.other||'')}" autocomplete="off">`:''}${q.access&&!(q.multipleOther&&o.value==='other')?`<label for="access-${o.value}">${t('access')} ${esc(o.value==='other'?o.label:o.label)}?</label><select id="access-${o.value}" data-access="${o.value}"><option value="">${t('choose')}</option>${accessTypes.map(a=>`<option value="${a.value}" ${value?.access?.[o.value]===a.value?'selected':''}>${localized(a.label,language)}</option>`).join('')}</select>`:''}</div>`:''}</div>`;
  }).join('')}</div>`;
 }
 function question(){
@@ -62,9 +65,13 @@ function question(){
   if(e.target.name==='answer' && q.type!=='text'){
    answers[q.id]=q.type==='multi'?toggleSelection(q,answers[q.id],e.target.value,e.target.checked):e.target.value;
    answers=pruneAnswers(answers);save();const focus=e.target.id;question();document.getElementById(focus)?.focus({preventScroll:true});
-  }else if(e.target.dataset.access){answers[q.id].access[e.target.dataset.access]=e.target.value;save();document.querySelector('#error').textContent='';}
+  }else if(e.target.dataset.otherAccess!==undefined){answers[q.id].others[Number(e.target.dataset.otherAccess)].access=e.target.value;save();document.querySelector('#error').textContent='';}
+  else if(e.target.dataset.access){answers[q.id].access[e.target.dataset.access]=e.target.value;save();document.querySelector('#error').textContent='';}
  };
- form.oninput=e=>{if(q.type==='text')answers[q.id]=e.target.value;else if(e.target.id==='other-name')answers[q.id].other=e.target.value;else return;save();document.querySelector('#error').textContent='';};
+ form.oninput=e=>{if(q.type==='text')answers[q.id]=e.target.value;else if(e.target.dataset.otherName!==undefined)answers[q.id].others[Number(e.target.dataset.otherName)].name=e.target.value;else if(e.target.id==='other-name')answers[q.id].other=e.target.value;else return;save();document.querySelector('#error').textContent='';};
+ const addOther=document.querySelector('#add-other');
+ if(addOther)addOther.onclick=()=>{const rows=answers[q.id].others;if(rows.length>=20)return;rows.push({name:'',access:''});save();question();document.querySelector('#other-tool-'+(rows.length-1))?.focus({preventScroll:true});};
+ document.querySelectorAll('[data-remove-other]').forEach(b=>b.onclick=()=>{answers[q.id].others.splice(Number(b.dataset.removeOther),1);if(!answers[q.id].others.length)answers[q.id]=toggleSelection(q,answers[q.id],'other',false);save();question();document.querySelector('#add-other, #choice-other')?.focus({preventScroll:true});});
  function next(){if(position===getQuestions(answers).length-1)page='review';else position++;save();render();focusTitle();}
  form.onsubmit=e=>{e.preventDefault();const error=answerError(q,answers[q.id],answers,language);if(error){document.querySelector('#error').textContent=error;return;}next();};
  document.querySelector('#back').onclick=()=>{if(position)position--;else page='participant';save();render();focusTitle();};

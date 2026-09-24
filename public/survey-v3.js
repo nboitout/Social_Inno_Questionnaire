@@ -3,7 +3,7 @@ const option = (value, en, ro, extra = {}) => ({ value, label: l(en, ro), ...ext
 const question = (id, section, type, en, ro, options, extra = {}) => ({ id, section, type, label: l(en, ro), required: true, ...(options ? { options } : {}), ...extra });
 export const accessTypes = [option('free','Free','Gratuit'),option('paid_personally','Paid personally','Plătit de mine'),option('provided_by_company','Provided by my company','Oferit de compania mea')];
 export const survey = {
-  version: '2026-09-data-decisions-v4', draft: false,
+  version: '2026-09-data-decisions-v3', draft: false,
   sections: [
     { id: 'today', title: l('Your AI today','AI în activitatea ta de azi'), description: l('Tools, access and habits','Instrumente, acces și obiceiuri') },
     { id: 'working', title: l('How you work with AI','Cum lucrezi cu AI'), description: l('Your everyday experience','Experiența ta de zi cu zi') },
@@ -13,8 +13,8 @@ export const survey = {
   questions: [
     question('ai_tools','today','multi','Which AI tools do you personally use today?','Ce instrumente AI folosești personal în prezent?',[
       ...['ChatGPT','Claude','Gemini','Microsoft Copilot','Perplexity'].map((name,i)=>option(['chatgpt','claude','gemini','copilot','perplexity'][i],name,name)),
-      option('internal_chatbots','Internal chatbots','Chatboți interni'), option('other','Other','Alte instrumente'), option('none','None','Niciunul',{exclusive:true})
-    ],{structured:true,access:true,other:true,multipleOther:true,helper:l('Select all that apply, then indicate how you access each tool.','Selectează toate variantele potrivite, apoi precizează cum ai acces la fiecare instrument.')}),
+      option('other','Other','Alt instrument'), option('none','None','Niciunul',{exclusive:true})
+    ],{structured:true,access:true,other:true,helper:l('Select all that apply, then indicate how you access each tool.','Selectează toate variantele potrivite, apoi precizează cum ai acces la fiecare instrument.')}),
     question('ai_usage_frequency','today','single','How often do you use AI in a typical working week?','Cât de des folosești AI într-o săptămână obișnuită de lucru?',[
       option('none',"I don’t use AI",'Nu folosesc AI'),option('less_than_weekly','Less than once a week','Mai rar de o dată pe săptămână'),option('few_times_weekly','A few times a week','De câteva ori pe săptămână'),option('daily','Every working day','În fiecare zi de lucru'),option('several_times_daily','Several times a day','De mai multe ori pe zi'),option('throughout_day','AI is part of my workflow throughout much of the day','AI face parte din fluxul meu de lucru o mare parte din zi')
     ]),
@@ -31,12 +31,13 @@ export const survey = {
       option('ai_assistant','AI assistant','AI ca asistent',{description:l('I do the work myself, but AI frequently helps me write, search, analyse, summarize or generate ideas.','Fac eu munca, dar AI mă ajută frecvent să scriu, să caut informații, să analizez, să rezum sau să generez idei.')}),
       option('ai_first_some_tasks','AI-first for some tasks','AI-first pentru unele sarcini',{description:l('For some work, I start with AI. I give it the objective and relevant information or files, let it produce the first result, then review and refine it.','Pentru unele sarcini, pornesc de la AI: îi dau obiectivul și informațiile sau fișierele relevante, îl las să producă prima variantă, apoi o verific și o îmbunătățesc.')}),
       option('ai_first_default','AI-first by default','AI-first, de regulă',{description:l('Whenever appropriate, I ask AI to perform the work. My role is increasingly to set the objective, provide context, steer, review and make decisions rather than manually create or edit everything myself.','Ori de câte ori are sens, îi cer AI-ului să facă munca. Rolul meu este tot mai mult să stabilesc obiectivul, să dau context, să ghidez, să verific și să decid, în loc să creez sau să editez totul manual.')}),
+      option('multi_step_agentic','Multi-step / agentic work','Lucru în mai mulți pași / cu agenți AI',{description:l('I regularly let AI perform multi-step work across files, tools or processes and produce completed deliverables or execute parts of a workflow.','Las în mod regulat AI-ul să execute sarcini în mai mulți pași, lucrând cu fișiere, instrumente sau procese, pentru a livra rezultate finalizate sau a executa părți dintr-un flux de lucru.')})
     ],{optionalForNonUsers:true}),
     question('ai_tasks_last_3_months','working','multi','What have you personally asked AI to do during the last 3 months?','Ce i-ai cerut tu AI-ului să facă în ultimele 3 luni?',[
       option('questions_search','Ask questions or search for information','Să răspundă la întrebări sau să caute informații'),option('write_rewrite','Write or rewrite text','Să scrie sau să reformuleze texte'),option('translate','Translate content','Să traducă conținut'),option('analyse_documents','Analyse a PDF or document','Să analizeze un PDF sau un document'),option('analyse_data','Analyse a spreadsheet or business data','Să analizeze un spreadsheet sau date de business'),option('presentations','Create a presentation','Să creeze o prezentare'),option('edit_files','Create or modify files directly','Să creeze sau să modifice direct fișiere'),option('email_calendar','Work with my email or calendar','Să lucreze cu emailul sau calendarul meu'),option('multi_step','Execute a multi-step task','Să execute o sarcină în mai mulți pași'),option('recurring_automation','Automate a recurring workflow','Să automatizeze un flux de lucru recurent'),option('build_app_agent','Build an AI application or agent','Să construiască o aplicație sau un agent AI'),option('none','None of these','Niciuna dintre acestea',{exclusive:true})
     ]),
-    question('company_ai_adoption','company','multi','How is AI currently used in your company?','Cum este folosit AI în prezent în compania ta?',[
-      option('not_used','AI is not currently used','AI nu este folosit în prezent',{exclusive:true}),option('individual_experiments','Individuals experiment with AI independently','Unele persoane experimentează cu AI din proprie inițiativă'),option('regular_employee_use','Several employees regularly use AI tools','Mai mulți angajați folosesc regulat instrumente AI'),option('systematic_teams','AI is systematically used in some teams or business processes','AI este folosit sistematic în anumite echipe sau procese de business'),option('production_workflows','We have AI-powered workflows or automations in production','Avem în producție fluxuri de lucru sau automatizări bazate pe AI'),option('embedded_core','AI is embedded in our products, services or core operations','AI este integrat în produsele, serviciile sau operațiunile noastre de bază')
+    question('company_ai_adoption','company','single','How is AI currently used in your company?','Cum este folosit AI în prezent în compania ta?',[
+      option('not_used','AI is not currently used','AI nu este folosit în prezent'),option('individual_experiments','Individuals experiment with AI independently','Unele persoane experimentează cu AI din proprie inițiativă'),option('regular_employee_use','Several employees regularly use AI tools','Mai mulți angajați folosesc regulat instrumente AI'),option('systematic_teams','AI is systematically used in some teams or business processes','AI este folosit sistematic în anumite echipe sau procese de business'),option('production_workflows','We have AI-powered workflows or automations in production','Avem în producție fluxuri de lucru sau automatizări bazate pe AI'),option('embedded_core','AI is embedded in our products, services or core operations','AI este integrat în produsele, serviciile sau operațiunile noastre de bază')
     ]),
     question('data_to_decisions_interest','workshop','single','How useful would this workshop theme be for you and your company?','Cât de utilă ar fi această temă de workshop pentru tine și compania ta?',[
       option('very_useful','Very useful — I would definitely like to work on this','Foarte utilă — cu siguranță aș vrea să lucrăm pe această temă'),
@@ -73,7 +74,7 @@ export function toggleSelection(q,value,selected,checked) {
   const exclusive=q.options.find(o=>o.value===selected)?.exclusive;
   const choices=checked ? exclusive ? [selected] : [...old.filter(v=>!q.options.find(o=>o.value===v)?.exclusive && v!==selected),selected] : old.filter(v=>v!==selected);
   if(!q.structured)return choices;
-  return {selected:choices,...(q.access?{access:Object.fromEntries(choices.filter(v=>v!=='none' && value?.access?.[v]).map(v=>[v,value.access[v]]))}:{}),...(choices.includes('other')?(q.multipleOther?{others:value?.others || [{name:'',access:''}]}:{other:value?.other || ''}):{})};
+  return {selected:choices,...(q.access?{access:Object.fromEntries(choices.filter(v=>v!=='none' && value?.access?.[v]).map(v=>[v,value.access[v]]))}:{}),...(choices.includes('other')?{other:value?.other || ''}:{})};
 }
 const errors={required:l('Please select an answer to continue.','Selectează un răspuns pentru a continua.'),text:l('Please enter a response (up to 3,000 characters).','Scrie un răspuns (maximum 3.000 de caractere).'),selection:l('Select at least one valid option. “None” cannot be combined with other choices.','Selectează cel puțin o variantă validă. Varianta „Niciunul” / „Niciuna dintre acestea” nu poate fi combinată cu alte variante.'),access:l('Choose how you access each selected tool.','Alege cum ai acces la fiecare instrument selectat.'),other:l('Enter the name of the other tool or application (up to 120 characters).','Introdu numele instrumentului sau al aplicației (maximum 120 de caractere).'),invalid:l('Please review this answer.','Verifică acest răspuns.')};
 const object=value=>value!==null && typeof value==='object' && !Array.isArray(value);
@@ -83,18 +84,12 @@ export function answerError(q,value,answers={},language='en') {
   if(!q.required && (typeof value==='string'&&!value.trim() || q.structured && object(value) && Array.isArray(value.selected) && !value.selected.length && !value.other && Object.keys(value).every(k=>['selected','other'].includes(k))))return '';
   if(q.type==='text')return typeof value==='string' && value.trim().length>0 && value.length<=q.maxLength ? '' : error('text');
   if(q.type==='single')return q.options.some(o=>o.value===value) ? '' : error('required');
-  if(q.structured && (!object(value) || Object.keys(value).some(k=>!['selected',...(q.access?['access']:[]),...(q.multipleOther?['others']:['other'])].includes(k))))return error('invalid');
+  if(q.structured && (!object(value) || Object.keys(value).some(k=>!['selected',...(q.access?['access']:[]),'other'].includes(k))))return error('invalid');
   const choices=q.structured?value.selected:value;
   if(!Array.isArray(choices)||!choices.length||new Set(choices).size!==choices.length||choices.some(v=>!q.options.some(o=>o.value===v))||choices.length>1&&choices.some(v=>q.options.find(o=>o.value===v)?.exclusive))return error('selection');
   if(q.access){
-    const tools=choices.filter(v=>v!=='none' && !(q.multipleOther && v==='other'));
+    const tools=choices.filter(v=>v!=='none');
     if(!object(value.access)||Object.keys(value.access).length!==tools.length||tools.some(v=>!Object.hasOwn(value.access,v)||!accessTypes.some(a=>a.value===value.access[v])))return error('access');
-  }
-  if(q.multipleOther){
-    if(!choices.includes('other'))return value.others===undefined?'':error('invalid');
-    if(!Array.isArray(value.others)||!value.others.length||value.others.length>20||value.others.some(o=>!object(o)||Object.keys(o).some(k=>!['name','access'].includes(k))||typeof o.name!=='string'||!o.name.trim()||o.name.length>120))return error('other');
-    if(value.others.some(o=>!accessTypes.some(a=>a.value===o.access)))return error('access');
-    return '';
   }
   if(q.other && choices.includes('other') && (typeof value.other!=='string'||!value.other.trim()||value.other.length>120))return q.id==='workshop_dataset_type'?(language==='ro'?'Descrie tipul de date (maximum 120 de caractere).':'Describe the other data type (up to 120 characters).'):error('other');
   if(q.other && !choices.includes('other') && value.other!==undefined && value.other!=='')return error('invalid');
@@ -106,7 +101,6 @@ export function formatAnswer(q,value,language='en') {
   if(q.type==='text')return String(value);
   if(q.type==='single')return q.options.find(o=>o.value===value)?.label || String(value);
   return selectedValues(q,value).map(id=>{
-    if(id==='other' && q.multipleOther)return (value.others||[]).map(o=>`${o.name} — ${localized(accessTypes.find(a=>a.value===o.access)?.label,language)||o.access}`).join('\n');
     const o=q.options.find(o=>o.value===id);
     const name=id==='other'&&value.other?`${o?.label}: ${value.other}`:o?.label || id;
     const access=q.access&&value.access?.[id];

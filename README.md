@@ -19,9 +19,9 @@ Open http://localhost:3000 or http://localhost:3000/admin. `ADMIN_PASSWORD` acce
 
 For isolated local submission testing, set `DATA_MODE=demo` and `SURVEY_LIVE=true` in the process environment. Demo records are in memory and disappear when the server stops. Demo mode is prohibited on Vercel/production. With `SURVEY_LIVE=false`, respondents can preview the complete flow but no visits or answers are recorded.
 
-## Questionnaire v3 — Data to Decisions
+## Questionnaire v4 — Data to Decisions
 
-Version `2026-09-data-decisions-v3` has four sections, ten main questions and up to two conditional follow-ups:
+Version `2026-09-data-decisions-v4` has four sections, ten main questions and up to two conditional follow-ups:
 
 1. Your AI today: tools/access, personal usage frequency, file/data access.
 2. How you work with AI: working mode and activities during the last three months.
@@ -40,8 +40,9 @@ Each response has its own named columns:
 
 - `first_name`, `family_name`, `company_name`: required participant identity, stored separately from question answers (100, 100 and 200 characters maximum).
 
-- `ai_tools`: JSON object with `selected` tool IDs, `access` keyed by tool ID, and optional `other` name. Access values are `free`, `paid_personally`, or `provided_by_company`.
-- `ai_usage_frequency`, `ai_working_mode`, `company_ai_adoption`: stable single-choice IDs.
+- `ai_tools`: JSON object with `selected` tool IDs, `access` keyed by tool ID, and optional `others` entries, each with a tool name and its own access type. Includes internal chatbots. Access values are `free`, `paid_personally`, or `provided_by_company`.
+- `ai_usage_frequency`, `ai_working_mode`: stable single-choice IDs.
+- `company_ai_adoption`: JSON array of selected adoption IDs; `not_used` is exclusive.
 - `ai_data_access`: JSON array of selected file/data access IDs. Multiple sources can be selected. The historical `desktop_ai_apps` field remains available for older responses.
 - `ai_tasks_last_3_months`: JSON array of selected IDs.
 - `data_to_decisions_interest`, `workshop_dataset_readiness`: stable single-choice IDs.
@@ -54,6 +55,8 @@ Metadata includes submission/session IDs, received time, questionnaire version a
 
 `lib/store.js` maps writes against the actual header row. Current writes require current columns, while older response sheets remain readable and extra future columns are tolerated. The existing 36 columns were preserved and the nine new columns appended at `Responses!AK:AS`. The participant identity columns were subsequently appended at `Responses!AT:AV`. Six v2 columns were added at `Responses!AW:BB`. The v3 file/data access answer is appended at `Responses!BC` (`ai_data_access`); v2 is archived in `public/survey-v2.js` for historical admin display. No participant rows were changed. Visits retain their existing schema.
 
+`public/survey-v3.js` archives the previous Q1, Q4 and single-choice Q6 for historical records. Existing Sheets columns are reused with versioned answer shapes.
+
 `public/survey-v1.js` archives the eight-question version. `public/survey-legacy.js` and `public/survey-legacy-en.js` archive the previous questionnaire for historical admin labels. Unknown versions fall back to original IDs/values. When making a later version, preserve the old configuration, keep unchanged IDs stable, append needed columns, and increment `survey.version`. Do not reinterpret old records under new questions.
 
 ## Google Sheets configuration
@@ -65,7 +68,7 @@ The destination has `Responses` and `Visits` tabs with the v3 headers. Productio
 1. Enable the Google Sheets API in your Google Cloud project and create a service account.
 2. Share the destination sheet with that service account as Editor.
 3. Add `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` and `GOOGLE_SHEET_ID` to the Vercel Production environment. The private key accepts PEM newlines or literal `\n` separators. Keep all credentials server-side.
-4. Confirm organizer/contact/retention privacy wording for the actual program, then set `SURVEY_LIVE=true` and redeploy. Version v3 already sets `survey.draft=false`.
+4. Confirm organizer/contact/retention privacy wording for the actual program, then set `SURVEY_LIVE=true` and redeploy. Version v4 already sets `survey.draft=false`.
 
 Both the live switch and configured storage are required. Missing credentials keep production in preview mode. The protected admin dashboard reports storage and collection status.
 

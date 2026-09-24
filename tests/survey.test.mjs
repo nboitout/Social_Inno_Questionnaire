@@ -9,7 +9,7 @@ const q=id=>getQuestions().find(q=>q.id===id);
 for(const language of ['en','ro'])test(`${language}: ten-question payload stores separate structured answers`,()=>{
  const data=fixture(language),record=validateSubmission(data);
  assert.equal(getQuestions().length,10);assert.equal(survey.sections.length,4);
- assert.equal(record.survey_version,'2026-09-data-decisions-v3');assert.equal(record.response_language,language);
+ assert.equal(record.survey_version,'2026-09-data-decisions-v4');assert.equal(record.response_language,language);
  assert.deepEqual(JSON.parse(record.ai_tools),data.answers.ai_tools);assert.deepEqual(JSON.parse(record.ai_data_access),data.answers.ai_data_access);
  assert.deepEqual(JSON.parse(record.ai_tasks_last_3_months),data.answers.ai_tasks_last_3_months);
  assert.equal(record.business_data_question,data.answers.business_data_question);assert.deepEqual(JSON.parse(record.answers_json),data.answers);
@@ -18,7 +18,7 @@ for(const language of ['en','ro'])test(`${language}: ten-question payload stores
 test('tool access and Other fields are required and stale unselected details are rejected',()=>{
  const data=fixture(),question=q('ai_tools');
  for(const bad of [{selected:['chatgpt'],access:{}},{selected:['chatgpt'],access:{chatgpt:'bogus'}},{selected:['other'],access:{other:'free'},other:' '},{selected:['none','claude'],access:{claude:'free'}},{selected:['claude'],access:{claude:'free',chatgpt:'free'}},{selected:['none'],access:{},other:'stale'}])assert.ok(answerError(question,bad,data.answers));
- assert.equal(answerError(question,{selected:['chatgpt','other'],access:{chatgpt:'free',other:'provided_by_company'},other:'Local AI'},data.answers),'');
+ assert.equal(answerError(question,{selected:['chatgpt','other'],access:{chatgpt:'free'},others:[{name:'Local AI',access:'provided_by_company'}]},data.answers),'');
 });
 test('exclusive choices clear selections, access and Other details',()=>{
  let value={selected:['chatgpt','other'],access:{chatgpt:'free',other:'paid_personally'},other:'Test AI'};
@@ -64,7 +64,7 @@ test('conditional workshop questions appear only when applicable and stale answe
 test('unchanged initial questions preserve v1 wording and archived records retain old questions',async()=>{
  const old=(await import('../public/survey-v1.js')).survey;
  const english=value=>JSON.parse(JSON.stringify(value,(key,v)=>key==='ro'?undefined:v));
- for(const i of [0,1,3,4,5])for(const key of ['id','label','type','options'])assert.deepEqual(english(survey.questions[i][key]),english(old.questions[i][key]));
+ for(const i of [1,4])for(const key of ['id','label','type','options'])assert.deepEqual(english(survey.questions[i][key]),english(old.questions[i][key]));
  assert.equal(old.questions.length,8);assert.ok(responseHeaders.includes('tedious_task'));assert.ok(responseHeaders.includes('workshop_expectation'));
 });
 
@@ -77,4 +77,22 @@ test('Q3 accepts combined file sources, stores them and preserves the previous q
  assert.ok(answerError(q('ai_data_access'),[]));assert.ok(answerError(q('ai_data_access'),['local_files','local_files']));
  const old=(await import('../public/survey-v2.js')).survey;assert.equal(old.questions[2].id,'desktop_ai_apps');assert.notEqual(old.version,survey.version);
  assert.ok(responseHeaders.includes('desktop_ai_apps'));assert.equal(responseHeaders.at(-1),'ai_data_access');
+});
+
+test('several Other tools retain individual access types and are cleared with None',()=>{
+ const data=fixture();let value=toggleSelection(q('ai_tools'),data.answers.ai_tools,'other',true);
+ value.others=[{name:'Tool A',access:'free'},{name:'Tool B',access:'paid_personally'}];
+ value=toggleSelection(q('ai_tools'),value,'internal_chatbots',true);value.access.internal_chatbots='provided_by_company';
+ data.answers.ai_tools=value;const record=validateSubmission(data);assert.deepEqual(JSON.parse(record.ai_tools).others,value.others);
+ assert.match(formatAnswer(q('ai_tools'),value),/Tool A — Free/);assert.match(formatAnswer(q('ai_tools'),value),/Tool B — Paid personally/);
+ for(const others of [[],[{name:'',access:'free'}],[{name:'Tool A',access:''}]])assert.ok(answerError(q('ai_tools'),{...value,others}));
+ assert.deepEqual(toggleSelection(q('ai_tools'),value,'none',true),{selected:['none'],access:{}});
+ assert.equal(toggleSelection(q('ai_tools'),value,'other',false).others,undefined);
+});
+test('company adoption accepts multiple choices and None is exclusive; agentic answer is retired',()=>{
+ const data=fixture();data.answers.company_ai_adoption=['individual_experiments','regular_employee_use','systematic_teams'];
+ assert.deepEqual(JSON.parse(validateSubmission(data).company_ai_adoption),data.answers.company_ai_adoption);
+ assert.deepEqual(toggleSelection(q('company_ai_adoption'),data.answers.company_ai_adoption,'not_used',true),['not_used']);
+ assert.ok(answerError(q('company_ai_adoption'),['not_used','systematic_teams']));assert.ok(answerError(q('company_ai_adoption'),'systematic_teams'));
+ assert.ok(answerError(q('ai_working_mode'),'multi_step_agentic'));assert.equal(q('ai_working_mode').options.length,4);
 });

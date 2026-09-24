@@ -45,6 +45,7 @@ Select all that apply, then indicate how you access each tool.
 - Gemini
 - Microsoft Copilot
 - Perplexity
+- Internal chatbots
 - Other
 - None
 
@@ -54,7 +55,7 @@ Select all that apply, then indicate how you access each tool.
 - Paid personally
 - Provided by my company
 
-**Other:** provide the tool or application name (up to 120 characters).
+**Other:** add one or more tools using “Add another tool”. Each tool has its own name (up to 120 characters) and access type.
 
 *“None” choices cannot be combined with other choices.*
 
@@ -109,8 +110,6 @@ Select all that apply, then indicate how you access each tool.
 - **AI-first by default**
   Whenever appropriate, I ask AI to perform the work. My role is increasingly to set the objective, provide context, steer, review and make decisions rather than manually create or edit everything myself.
 
-- **Multi-step / agentic work**
-  I regularly let AI perform multi-step work across files, tools or processes and produce completed deliverables or execute parts of a workflow.
 
 ### Q5. What have you personally asked AI to do during the last 3 months?
 
@@ -141,9 +140,9 @@ Select all that apply, then indicate how you access each tool.
 
 <!-- question-id: company_ai_adoption -->
 
-**Response format:** Select one option. Required.
+**Response format:** Select all that apply. Required.
 
-- AI is not currently used
+- AI is not currently used (cannot be combined with other choices)
 - Individuals experiment with AI independently
 - Several employees regularly use AI tools
 - AI is systematically used in some teams or business processes

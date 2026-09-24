@@ -1,6 +1,6 @@
 # Website text — review and editing master
 
-Updated: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-data-decisions-v3`.
+Updated: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-data-decisions-v4`.
 
 Edit the wording directly under **EN** and **RO**, then ask Codex to apply this file to the website. Keep the headings/IDs so each edit can be mapped back to its source. You can edit just one language and add a note asking for the other to be translated. Add editorial notes as `REVIEW NOTE: ...`.
 
@@ -487,7 +487,17 @@ Which AI tools do you personally use today?
 
 Ce instrumente AI folosești personal în prezent?
 
-### ai_tools.helper
+### Response format
+
+**EN**
+
+Select all that apply.
+
+**RO**
+
+Selectează toate variantele care se aplică.
+
+### Helper
 
 **EN**
 
@@ -547,6 +557,16 @@ Perplexity
 
 Perplexity
 
+### ai_tools.internal_chatbots
+
+**EN**
+
+Internal chatbots
+
+**RO**
+
+Chatboți interni
+
 ### ai_tools.other
 
 **EN**
@@ -555,7 +575,7 @@ Other
 
 **RO**
 
-Alt instrument
+Alte instrumente
 
 ### ai_tools.none
 
@@ -737,6 +757,16 @@ Which statement best describes how you usually work with AI today?
 
 Care afirmație descrie cel mai bine modul în care lucrezi de obicei cu AI?
 
+### Response format
+
+**EN**
+
+Select one option.
+
+**RO**
+
+Selectează o singură variantă.
+
 ### ai_working_mode.occasional_help
 
 **EN**
@@ -747,7 +777,7 @@ Occasional help
 
 Ajutor ocazional
 
-### ai_working_mode.occasional_help.description
+### Description
 
 **EN**
 
@@ -767,7 +797,7 @@ AI assistant
 
 AI ca asistent
 
-### ai_working_mode.ai_assistant.description
+### Description
 
 **EN**
 
@@ -787,7 +817,7 @@ AI-first for some tasks
 
 AI-first pentru unele sarcini
 
-### ai_working_mode.ai_first_some_tasks.description
+### Description
 
 **EN**
 
@@ -807,7 +837,7 @@ AI-first by default
 
 AI-first, de regulă
 
-### ai_working_mode.ai_first_default.description
+### Description
 
 **EN**
 
@@ -816,26 +846,6 @@ Whenever appropriate, I ask AI to perform the work. My role is increasingly to s
 **RO**
 
 Ori de câte ori are sens, îi cer AI-ului să facă munca. Rolul meu este tot mai mult să stabilesc obiectivul, să dau context, să ghidez, să verific și să decid, în loc să creez sau să editez totul manual.
-
-### ai_working_mode.multi_step_agentic
-
-**EN**
-
-Multi-step / agentic work
-
-**RO**
-
-Lucru în mai mulți pași / cu agenți AI
-
-### ai_working_mode.multi_step_agentic.description
-
-**EN**
-
-I regularly let AI perform multi-step work across files, tools or processes and produce completed deliverables or execute parts of a workflow.
-
-**RO**
-
-Las în mod regulat AI-ul să execute sarcini în mai mulți pași, lucrând cu fișiere, instrumente sau procese, pentru a livra rezultate finalizate sau a executa părți dintr-un flux de lucru.
 
 ### Q5 — ai_tasks_last_3_months
 
@@ -976,6 +986,16 @@ How is AI currently used in your company?
 **RO**
 
 Cum este folosit AI în prezent în compania ta?
+
+### Response format
+
+**EN**
+
+Select all that apply.
+
+**RO**
+
+Selectează toate variantele care se aplică.
 
 ### company_ai_adoption.not_used
 
@@ -2327,3 +2347,5 @@ For the workshop, participants should use an appropriately sanitized or anonymiz
 **RO**
 
 Pentru workshop, participanții ar trebui să folosească un set de date curățat de informații sensibile sau anonimizat corespunzător. Nu include parole, credențiale, date personale inutile sau informații confidențiale care nu ar trebui partajate cu platforma AI folosită în sesiune.
+
+Q1 Other tools: “Add another tool” / „Adaugă alt instrument”. Each entry has its own name and access type.
