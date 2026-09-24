@@ -1,6 +1,6 @@
 # Social Inno · Raiffeisen AI & SMEs questionnaire
 
-Eight-question workshop preparation survey for Romanian SME founders and managers. English is the default; all respondent copy is also available in Romanian. The English-only `/admin` dashboard shows visits, responses, individual answers and CSV export. No maturity score is calculated or displayed.
+Participant identification form followed by an eight-question workshop preparation survey for Romanian SME founders and managers. English is the default; all respondent copy is also available in Romanian. The English-only `/admin` dashboard shows visits, responses, individual answers and CSV export. No maturity score is calculated or displayed.
 
 Production: https://social-inno-questionnaire.vercel.app/
 Repository: https://github.com/nboitout/Social_Inno_Questionnaire (`main`; Vercel deploys pushes automatically).
@@ -31,11 +31,13 @@ Version `2026-09-v1` has three sections and exactly eight questions:
 
 Assumptions: all questions are required except Q4 when Q1 or Q2 indicates no AI use. Those participants see Q4 with an explicit skip option; skipped working mode is stored as null, without forcing a misleading answer or adding a ninth question. Q7 and Q8 accept 1–3,000 characters; Other names accept up to 120. Every selected Q1 tool, including Other, requires an access type. No cross-question consistency judgments are shown. The advertised 5–7 minutes is a target to validate with real participants, not a measured completion benchmark.
 
-Back/Next and language switching preserve answers. Versioned browser drafts expire after seven days and are removed after confirmed live submission. Authored text is translated; participant free text is never translated. Review and consent precede a live submission; a failed request retains the draft and offers retry.
+Back/Next and language switching preserve answers. Participant details are included in review and can be edited before submission. Versioned browser drafts include identity details, expire after seven days and are removed after confirmed live submission. Authored text is translated; participant free text is never translated. Review and consent precede a live submission; a failed request retains the draft and offers retry.
 
 ## Structured data and compatibility
 
 Each response has its own named columns:
+
+- `first_name`, `family_name`, `company_name`: required participant identity, stored separately from question answers (100, 100 and 200 characters maximum).
 
 - `ai_tools`: JSON object with `selected` tool IDs, `access` keyed by tool ID, and optional `other` name. Access values are `free`, `paid_personally`, or `provided_by_company`.
 - `ai_usage_frequency`, `ai_working_mode`, `company_ai_adoption`: stable single-choice IDs.
@@ -46,7 +48,7 @@ Each response has its own named columns:
 
 Metadata includes submission/session IDs, received time, questionnaire version and duration. Consent is validated before any response is accepted. `answers_json` is an additional structured snapshot; it does not replace the separate answer columns. Frequency, working mode and company adoption remain separate dimensions.
 
-`lib/store.js` maps writes against the actual header row. Current writes require current columns, while older response sheets remain readable and extra future columns are tolerated. The existing 36 columns were preserved and the nine new columns appended at `Responses!AK:AS`. No participant rows were changed. Visits retain their existing schema.
+`lib/store.js` maps writes against the actual header row. Current writes require current columns, while older response sheets remain readable and extra future columns are tolerated. The existing 36 columns were preserved and the nine new columns appended at `Responses!AK:AS`. The participant identity columns were subsequently appended at `Responses!AT:AV`. No participant rows were changed. Visits retain their existing schema.
 
 `public/survey-legacy.js` and `public/survey-legacy-en.js` archive the previous questionnaire for historical admin labels. Unknown versions fall back to original IDs/values. When making a later version, preserve the old configuration, keep unchanged IDs stable, append needed columns, and increment `survey.version`. Do not reinterpret old records under new questions.
 
@@ -69,7 +71,7 @@ Both the live switch and configured storage are required. Missing credentials ke
 
 `api/admin.js` reports visits, sessions, completions and personal AI frequency. `public/admin.js` displays tools/access, working mode, company adoption and all answers, with search, company-adoption filtering, legacy records and CSV export. Original Romanian comments remain Romanian inside the English interface. CSV cells are protected against formula injection.
 
-Sessions are anonymous per-browser-tab IDs, not people. No names, emails, IP addresses or URL query strings are recorded by the application; hosting infrastructure may have its own logs. Visits count successful page-view writes. Completion is completed started sessions divided by started sessions; failed or blocked analytics can undercount activity.
+Session IDs are random per-browser-tab identifiers, not unique-person counts. Names and company names identify program participants and are stored with responses. Emails, IP addresses and URL query strings are not recorded by the application; hosting infrastructure may have its own logs. Visits count successful page-view writes. Completion is completed started sessions divided by started sessions; failed or blocked analytics can undercount activity.
 
 Sheets does not provide atomic uniqueness: simultaneous duplicate submissions may create duplicate raw rows even though ordinary retries are deduplicated and the dashboard deduplicates IDs. This architecture reads used rows for analytics and is intended for a small workshop survey. Larger campaigns would benefit from a transactional datastore and distributed rate limiting.
 

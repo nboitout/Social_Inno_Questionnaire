@@ -78,3 +78,13 @@ export function formatAnswer(q,value,language='en') {
     return name+(access?` — ${localized(accessTypes.find(a=>a.value===access)?.label,language)||access}`:'');
   }).join('\n');
 }
+
+export const participantFields = [
+ {id:'first_name',label:l('First name','Prenume'),autocomplete:'given-name',maxLength:100},
+ {id:'family_name',label:l('Family name','Nume de familie'),autocomplete:'family-name',maxLength:100},
+ {id:'company_name',label:l('Company name','Denumirea companiei'),autocomplete:'organization',maxLength:200}
+];
+export function participantError(value,language='en') {
+ if(!object(value)||Object.keys(value).some(k=>!participantFields.some(f=>f.id===k))||participantFields.some(f=>typeof value[f.id]!=='string'||!value[f.id].trim()||value[f.id].length>f.maxLength))return language==='ro'?'Completează prenumele, numele de familie (maximum 100 de caractere fiecare) și denumirea companiei (maximum 200 de caractere).':'Enter your first name, family name (up to 100 characters each) and company name (up to 200 characters).';
+ return '';
+}

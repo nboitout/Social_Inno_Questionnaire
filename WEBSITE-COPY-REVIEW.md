@@ -1,6 +1,6 @@
 # Website text — review and editing master
 
-Snapshot: 24 September 2026 · Website source commit: `74c40d0` · Questionnaire: `2026-09-v1`.
+Snapshot: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-v1`.
 
 Edit the wording directly under **EN** and **RO**, then ask Codex to apply this file to the website. Keep the headings/IDs so each edit can be mapped back to its source. You can edit just one language and add a note asking for the other to be translated. Add editorial notes as `REVIEW NOTE: ...`.
 
@@ -128,7 +128,7 @@ A WORKSHOP SHAPED AROUND YOU
 
 UN ATELIER ADAPTAT NEVOILOR TALE
 
-The CTA appends → and opens the existing questionnaire directly. “Continue” appears when there is saved progress. The three cards reuse the section text in section 3.
+The CTA appends → and opens the participant identification form before the eight questions. “Continue” appears when there is saved progress. The three cards reuse the section text in section 3.
 
 ## 2. Branding, shared navigation and privacy
 
@@ -216,21 +216,21 @@ Despre răspunsuri și confidențialitate
 
 **EN**
 
-We do not ask for your name, email or company name. Responses are stored in Google Sheets and accessed through the protected admin area to prepare the workshop. A random browser session ID helps count visits and completions; the survey does not store your IP address. Saved progress expires after 7 days and is cleared from this browser when you next open the survey or submit. Avoid including personal or confidential business information.
+We collect your first name, family name and company name to identify you as a program participant and connect your responses to you and your business. These details and your answers are stored together in Google Sheets and accessed through the protected admin area to prepare your workshop and mentoring sessions. A random browser session ID helps count visits and completions; the survey does not store your IP address. Your details and progress are saved in this browser. This saved draft expires after 7 days and is cleared from this browser when you next open the survey or submit. Please do not include other personal or confidential business information in your free-text answers.
 
 **RO**
 
-Nu cerem numele, emailul sau denumirea companiei. Răspunsurile sunt păstrate în Google Sheets și consultate în zona de administrare protejată, pentru pregătirea atelierului. Un identificator aleatoriu de sesiune ajută la numărarea vizitelor și completărilor; chestionarul nu stochează adresa IP. Progresul salvat expiră după 7 zile și este șters din browser la următoarea deschidere sau la trimitere. Evită informațiile personale sau confidențiale despre companie.
+Colectăm prenumele, numele de familie și denumirea companiei pentru a te identifica drept participant la program și a asocia răspunsurile cu tine și cu afacerea ta. Aceste date și răspunsurile tale sunt păstrate împreună în Google Sheets și consultate în zona de administrare protejată pentru pregătirea workshopului și a sesiunilor de mentorat. Un identificator aleatoriu de sesiune ajută la numărarea vizitelor și completărilor; chestionarul nu stochează adresa IP. Datele tale și progresul sunt salvate în acest browser. Această ciornă expiră după 7 zile și este șters din browser la următoarea deschidere sau la trimitere. Nu include alte date personale sau informații confidențiale despre companie în răspunsurile libere.
 
 ### ui.clear
 
 **EN**
 
-Clear saved progress
+Clear saved details and progress
 
 **RO**
 
-Șterge progresul salvat
+Șterge datele și progresul salvate
 
 The tagline is hidden on the homepage but remains on the questionnaire screens. SIS logo text/alt text: **Social Innovation Solutions**. Footer topic: **AI & SMEs** / **AI & IMM-uri**.
 
@@ -267,6 +267,119 @@ Social Innovation Solutions · Back to the introduction
 **RO**
 
 Social Innovation Solutions · Înapoi la prezentare
+
+## Participant identification — before Q1
+
+Required first name, family name and company name. These are participant metadata, separate from the eight survey questions. Details are included in review, stored with the response and displayed in the English admin dashboard.
+
+### ui.participantTitle
+
+**EN**
+
+Tell us who you are
+
+**RO**
+
+Spune-ne cine ești
+
+### ui.participantIntro
+
+**EN**
+
+Please enter your details so we can connect your answers to you and your company and prepare your workshop and mentoring sessions.
+
+**RO**
+
+Completează datele tale pentru a putea asocia răspunsurile cu tine și cu compania ta și a pregăti workshopul și sesiunile de mentorat.
+
+### ui.participantHeading
+
+**EN**
+
+PARTICIPANT DETAILS
+
+**RO**
+
+DATELE PARTICIPANTULUI
+
+### ui.participantContinue
+
+**EN**
+
+Continue to the questionnaire
+
+**RO**
+
+Continuă la chestionar
+
+### ui.participantReview
+
+**EN**
+
+Participant details
+
+**RO**
+
+Datele participantului
+
+### ui.participantSave
+
+**EN**
+
+Back to review
+
+**RO**
+
+Înapoi la verificare
+
+### participant.first_name
+
+**EN**
+
+First name
+
+**RO**
+
+Prenume
+
+### participant.family_name
+
+**EN**
+
+Family name
+
+**RO**
+
+Nume de familie
+
+### participant.company_name
+
+**EN**
+
+Company name
+
+**RO**
+
+Denumirea companiei
+
+### participant.validation
+
+**EN**
+
+Enter your first name, family name (up to 100 characters each) and company name (up to 200 characters).
+
+**RO**
+
+Completează prenumele, numele de familie (maximum 100 de caractere fiecare) și denumirea companiei (maximum 200 de caractere).
+
+### Admin identity labels (English only)
+
+- First name
+- Family name
+- Company name
+- Participant / company
+- Not provided
+- Search names, companies, tools or workshop needs…
 
 ## 3. Section names and descriptions
 
@@ -1630,7 +1743,7 @@ Question/option labels reuse the English wording in sections 3–4. Respondent f
 
 - **response-list-filters-and-export.3**: Search responses
 
-- **response-list-filters-and-export.4**: Search tools, working styles, workshop needs or response IDs…
+- **response-list-filters-and-export.4**: Search names, companies, tools or workshop needs…
 
 - **response-list-filters-and-export.5**: Filter by company adoption
 
@@ -1852,11 +1965,11 @@ secțiuni scurte
 
 **EN**
 
-No name or email needed
+For program participants
 
 **RO**
 
-Fără nume sau email
+Pentru participanții la program
 
 ### unused.ui.why
 

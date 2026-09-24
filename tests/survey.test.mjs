@@ -51,3 +51,9 @@ test('analytics keep frequency separate and deduplicate retry IDs',()=>{
  const events=[{event_id:'v',session_id:record.session_id,event:'visit'},{event_id:'v',session_id:record.session_id,event:'visit'},{event_id:'s',session_id:record.session_id,event:'start'}];
  const m=summarize([record,record,legacy],events);assert.equal(m.responses,2);assert.equal(m.currentResponses,1);assert.equal(m.legacyResponses,1);assert.equal(m.frequency.daily,1);assert.equal(m.visits,1);assert.equal(m.completion,100);assert.equal(summarize([],[]).completion,null);
 });
+
+test('participant identity is required, bounded, trimmed and stored separately',()=>{
+ const data=fixture();data.participant.first_name=' Ana ';const record=validateSubmission(data);assert.equal(record.first_name,'Ana');assert.equal(record.family_name,'Popescu');assert.equal(record.company_name,'Exemplu SRL');assert.equal(JSON.parse(record.answers_json).first_name,undefined);
+ for(const value of [undefined,null,[],{}, {...data.participant,first_name:' '},{...data.participant,family_name:42},{...data.participant,company_name:'x'.repeat(201)},{...data.participant,first_name:'x'.repeat(101)},{...data.participant,extra:'x'}])assert.throws(()=>validateSubmission({...data,participant:value}),{status:400});
+ assert.throws(()=>validateHeaders(responseHeaders.filter(h=>h!=='first_name'),'Responses',true));assert.doesNotThrow(()=>validateHeaders(responseHeaders.filter(h=>h!=='first_name'),'Responses'));
+});

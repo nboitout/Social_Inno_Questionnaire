@@ -109,3 +109,5 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--olive),#
 .homepage-hero .hero-actions{margin-top:16px}
 .homepage-hero .hero-reassurance{font-size:13px;margin-top:14px}
 }
+
+.participant-fields{display:grid;gap:18px;margin:24px 0}.participant-fields label{font-size:15px;font-weight:600}.participant-fields input{display:block;width:100%;margin-top:6px;padding:12px;border:1px solid var(--border);border-radius:7px;color:var(--ink);background:white;font-size:16px}

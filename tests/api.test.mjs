@@ -33,6 +33,6 @@ test('Google Sheets adapter writes RAW structured columns, reads them back and t
   if(decodeURIComponent(url).includes('Responses!A2:'))return Response.json({values:rows});
   throw new Error('Unexpected request');
  };
- try{const payload=fixture('ro');let res=response();await submit(req(payload),res);assert.equal(res.data.ok,true);res=response();await submit(req(payload),res);assert.equal(appendCount,1);const [saved]=await readRows('Responses');assert.deepEqual(JSON.parse(saved.answers_json),payload.answers);assert.equal(saved.response_language,'ro');assert.equal(saved.future_question,'');}
+ try{const payload=fixture('ro');let res=response();await submit(req(payload),res);assert.equal(res.data.ok,true);res=response();await submit(req(payload),res);assert.equal(appendCount,1);const [saved]=await readRows('Responses');assert.deepEqual(JSON.parse(saved.answers_json),payload.answers);assert.equal(saved.response_language,'ro');assert.equal(saved.first_name,payload.participant.first_name);assert.equal(saved.family_name,payload.participant.family_name);assert.equal(saved.company_name,payload.participant.company_name);assert.equal(saved.future_question,'');}
  finally{global.fetch=oldFetch;delete process.env.SURVEY_LIVE;delete process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;delete process.env.GOOGLE_PRIVATE_KEY;}
 });
