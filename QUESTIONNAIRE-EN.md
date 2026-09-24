@@ -14,7 +14,7 @@ Tell us how you currently use AI — in your own work and across your company.
 
 Your answers will help us adapt the upcoming **AI workshop and mentoring sessions** to your experience, business challenges and expectations.
 
-**5–7 minutes · No technical knowledge required**
+**5–7 minutes**
 
 There are no right or wrong answers. We're interested in how you actually work today.
 

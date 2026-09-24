@@ -66,15 +66,15 @@ Răspunsurile tale ne vor ajuta să adaptăm workshopul de AI și sesiunile de m
 
 ### homepage.practical-information
 
-_Source keys: time noTechnical._
+_Source key: time._
 
 **EN**
 
-5–7 minutes · No technical knowledge required
+5–7 minutes
 
 **RO**
 
-5–7 minute · Nu sunt necesare cunoștințe tehnice
+5–7 minute
 
 ### ui.start
 
@@ -455,7 +455,7 @@ AI for Business: From Data to Decisions
 
 **RO**
 
-AI pentru afaceri: de la date la decizii
+AI pentru business: de la date la decizii
 
 ### workshopTheme.subtitle
 
@@ -2268,16 +2268,6 @@ Your answers will help the Lead AI Expert prepare the mentoring programme and ou
 **RO**
 
 Răspunsurile tale îl vor ajuta pe Lead AI Expert să pregătească programul de mentorat și workshopul de AI de 3 ore pornind de la nevoi reale de business.
-
-### unused.ui.simple
-
-**EN**
-
-No technical knowledge is needed. Simply describe your current situation.
-
-**RO**
-
-Nu ai nevoie de cunoștințe tehnice. Descrie pur și simplu situația ta actuală.
 
 ### unused.ui.loading
 
