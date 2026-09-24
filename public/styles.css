@@ -88,3 +88,24 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--olive),#
 .primary,.secondary{font-size:15px}
 .site-footer{padding:22px 18px;margin-top:24px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
+
+/* Homepage preparation message: existing composition, shorter supporting hierarchy. */
+.homepage-hero .hero-topic{font-size:14px;color:var(--muted);margin-top:12px;font-weight:600}
+.homepage-hero h1{margin:20px 0}
+.homepage-hero .hero-lead{color:var(--ink);line-height:1.5}
+.hero-purpose{font-size:17px;line-height:1.6;color:var(--muted);margin-top:14px;max-width:510px}
+.hero-purpose strong{color:var(--ink);font-weight:600}
+.hero-practical{font-size:14px;font-weight:600;margin-top:22px}
+.homepage-hero .hero-actions{margin-top:18px}
+.homepage-hero .hero-reassurance{font-size:14px;line-height:1.55;color:var(--muted);margin-top:16px;max-width:490px}
+@media(max-width:760px){
+.homepage-hero{padding-top:16px;gap:32px;padding-bottom:32px}
+.homepage-hero .eyebrow{font-size:10px}
+.homepage-hero .hero-topic{font-size:12px;margin-top:8px}
+.homepage-hero h1{font-size:40px;margin:16px 0}
+.homepage-hero .hero-lead,.hero-purpose{font-size:16px;line-height:1.45}
+.hero-purpose{margin-top:12px}
+.hero-practical{font-size:13px;margin-top:18px}
+.homepage-hero .hero-actions{margin-top:16px}
+.homepage-hero .hero-reassurance{font-size:13px;margin-top:14px}
+}
