@@ -31,9 +31,10 @@ function home(){
  document.querySelector('#clear-draft').onclick=()=>{reset();home();};
 }
 function shell(content,index=position){
+ document.body.dataset.page=page;
  const section=survey.questions[index].section;
  const active=survey.sections.findIndex(s=>s.id===section);
- main.innerHTML=`${banner()}<div class="survey-layout"><aside class="survey-sidebar"><div class="eyebrow">${t('journey')}</div><h2>${t('sidebarTitle').replace('\n','<br>')}</h2><ol class="steps">${survey.sections.map((s,i)=>`<li class="${i===active?'current':i<active?'done':''}" ${i===active?'aria-current="step"':''}><span>${i<active?'✓':`0${i+1}`}</span><div><strong>${localized(s.title,language)}</strong><small>${localized(s.description,language)}</small></div></li>`).join('')}</ol><div class="sidebar-note">↳<p>${t('saved')}</p></div><button id="home" class="text-button">← ${t('home')}</button></aside><section class="question-panel">${content}</section></div>`;
+ main.innerHTML=`${banner()}<div class="survey-layout"><aside class="survey-sidebar"><div class="eyebrow">${t('journey')}</div><h2>${t('sidebarTitle').replace('\n','<br>')}</h2><ol class="steps">${survey.sections.map((s,i)=>`<li class="${i===active?'current':i<active?'done':''}" ${i===active?'aria-current="step"':''}><span>${i<active?'✓':`0${i+1}`}</span><div><strong>${localized(s.title,language)}</strong><small>${localized(s.description,language)}</small></div></li>`).join('')}</ol><div class="sidebar-note">↳<p>${t('saved')}</p></div><button id="home" class="text-button">← ${t('home')}</button></aside><section class="question-panel" data-question="${page==='question'?survey.questions[index].id:page}">${content}</section></div>`;
  document.querySelector('#home').onclick=()=>{page='home';render();focusTitle();};
 }
 function participantPage(){
@@ -94,7 +95,7 @@ function updateLanguage(){
  document.querySelector('meta[name="description"]').content=[t('intro'),t('purposeBefore'),t('purposeFocus'),t('purposeAfter')].join(' ');document.querySelector('.skip').textContent=t('skipContent');document.querySelector('.brand').setAttribute('aria-label',`Social Innovation Solutions · ${t('home')}`);document.querySelector('.brand-caption').textContent=t('caption');document.querySelector('.footer-topic').textContent=language==='en'?'AI & SMEs':'AI & IMM-uri';document.querySelector('.footer-identity').hidden=page==='home';document.querySelector('.footer-tagline').textContent=t('tagline');document.querySelector('.footer-tagline').hidden=page==='home';document.querySelector('.site-footer a').textContent=`${t('admin')} ↗`;
  document.querySelectorAll('[data-language]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.language===language));b.disabled=busy;});
 }
-function render(){updateLanguage();({home,participant:participantPage,question,review,success})[page]();}
+function render(){document.body.dataset.page=page;updateLanguage();({home,participant:participantPage,question,review,success})[page]();}
 for(const button of document.querySelectorAll('[data-language]'))button.onclick=()=>{if(busy)return;language=button.dataset.language;storage.set('social-inno-language',language);render();};
 try{const r=await fetch('/api/config',{signal:AbortSignal.timeout(10000)});if(r.ok)config=await r.json();}catch{}
 render();track('visit');

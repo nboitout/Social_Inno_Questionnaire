@@ -1377,11 +1377,11 @@ Totul arată bine?
 
 **EN**
 
-You can edit any answer before finishing.
+Select Edit to view or change a full answer before finishing.
 
 **RO**
 
-Poți modifica orice răspuns înainte de a încheia.
+Selectează Modifică pentru a vedea sau schimba un răspuns complet înainte de a încheia.
 
 ### ui.edit
 
