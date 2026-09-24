@@ -22,7 +22,7 @@ Copy-Item .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000 and http://localhost:3000/admin. Set `ADMIN_PASSWORD` (at least 24 characters) and `SESSION_SECRET` (at least 32 characters) in `.env.local` to use the admin dashboard. Generate two independent values with `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`.
+Open http://localhost:3000 and http://localhost:3000/admin. Set `ADMIN_PASSWORD` (at least 12 characters) and `SESSION_SECRET` (at least 32 characters) in `.env.local` to use the admin dashboard. Generate two independent values with `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`.
 
 `DATA_MODE=demo` is optional for local development: data is in memory, initially empty and lost on restart. It is prohibited on Vercel/production. Preview mode still blocks collection.
 
