@@ -6,6 +6,17 @@ Original asset: https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/publi
 
 Used unmodified on a dark background at the project owner's request. The asset remains the property of its owner.
 
+# Business Forward sponsor logos
+
+The Raiffeisen Bank and Orange Business PNG logos were obtained from the official
+Business Forward website on 2026-09-24 and are served locally so the sponsor strip
+does not depend on third-party image loading.
+
+- Raiffeisen Bank: https://media.base44.com/images/public/699c4d86fae71d91d98ed8ba/1b2fd18d1_RB-Logo-Bank-St-Squared-Col-Neg-RGB2.png
+- Orange Business: https://media.base44.com/images/public/699c4d86fae71d91d98ed8ba/9056db578_Orange_Business_RGB_Small_Logo_White_Text.png
+
+The assets remain the property of their respective owners.
+
 # Favicon
 
 `/favicon.svg`, `/favicon.ico` and `/apple-touch-icon.png` are an original mark for this study: two overlapping speech bubbles (a nod to the SIS logo) in the site palette, with an AI spark in place of the logo's dots. It is not a copy of the SIS logo.
