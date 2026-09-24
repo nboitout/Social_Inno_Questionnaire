@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {survey,getQuestions,answerError,toggleSelection,requiredQuestion,pruneAnswers} from '../public/survey-config.js';
+import {survey,getQuestions,answerError,toggleSelection,requiredQuestion,pruneAnswers,formatAnswer} from '../public/survey-config.js';
 import {validateSubmission} from '../api/submit.js';
 import {summarize} from '../api/admin.js';
 import {fixture} from './fixtures.mjs';
@@ -9,8 +9,8 @@ const q=id=>getQuestions().find(q=>q.id===id);
 for(const language of ['en','ro'])test(`${language}: ten-question payload stores separate structured answers`,()=>{
  const data=fixture(language),record=validateSubmission(data);
  assert.equal(getQuestions().length,10);assert.equal(survey.sections.length,4);
- assert.equal(record.survey_version,'2026-09-data-decisions-v2');assert.equal(record.response_language,language);
- assert.deepEqual(JSON.parse(record.ai_tools),data.answers.ai_tools);assert.deepEqual(JSON.parse(record.desktop_ai_apps),data.answers.desktop_ai_apps);
+ assert.equal(record.survey_version,'2026-09-data-decisions-v3');assert.equal(record.response_language,language);
+ assert.deepEqual(JSON.parse(record.ai_tools),data.answers.ai_tools);assert.deepEqual(JSON.parse(record.ai_data_access),data.answers.ai_data_access);
  assert.deepEqual(JSON.parse(record.ai_tasks_last_3_months),data.answers.ai_tasks_last_3_months);
  assert.equal(record.business_data_question,data.answers.business_data_question);assert.deepEqual(JSON.parse(record.answers_json),data.answers);
  assert.ok(survey.questions.every(q=>responseHeaders.includes(q.id)));
@@ -24,11 +24,7 @@ test('exclusive choices clear selections, access and Other details',()=>{
  let value={selected:['chatgpt','other'],access:{chatgpt:'free',other:'paid_personally'},other:'Test AI'};
  value=toggleSelection(q('ai_tools'),value,'none',true);assert.deepEqual(value,{selected:['none'],access:{}});
  value=toggleSelection(q('ai_tools'),value,'claude',true);assert.deepEqual(value,{selected:['claude'],access:{}});
- let apps={selected:['other'],other:'Local app'};
- apps=toggleSelection(q('desktop_ai_apps'),apps,'browser_only',true);assert.deepEqual(apps,{selected:['browser_only']});
- apps=toggleSelection(q('desktop_ai_apps'),apps,'no_computer_ai',true);assert.deepEqual(apps,{selected:['no_computer_ai']});
  assert.deepEqual(toggleSelection(q('ai_tasks_last_3_months'),['none'],'analyse_data',true),['analyse_data']);
- assert.ok(answerError(q('desktop_ai_apps'),{selected:['browser_only','no_computer_ai']}));
 });
 test('non-users can skip working style; other respondents must select one; ten main questions remain visible',()=>{
  const data=fixture('en',true);assert.equal(requiredQuestion(q('ai_working_mode'),data.answers),false);assert.doesNotThrow(()=>validateSubmission(data));
@@ -37,7 +33,7 @@ test('non-users can skip working style; other respondents must select one; ten m
 });
 test('server rejects invalid, old-version, extra, duplicate and oversized answers',()=>{
  const make=()=>fixture();let data=make();data.version='2026-09-draft-1';assert.throws(()=>validateSubmission(data),{code:'version'});
- for(const edit of [d=>d.answers.extra='x',d=>d.answers.ai_usage_frequency='bogus',d=>d.answers.ai_tasks_last_3_months=['translate','translate'],d=>d.answers.business_data_question=' ',d=>d.answers.workshop_other_expectation='x'.repeat(3001),d=>d.consent=false,d=>d.language='xx',d=>d.answers.desktop_ai_apps={selected:['other'],other:''}]){data=make();edit(data);assert.throws(()=>validateSubmission(data),{status:400});}
+ for(const edit of [d=>d.answers.extra='x',d=>d.answers.ai_usage_frequency='bogus',d=>d.answers.ai_tasks_last_3_months=['translate','translate'],d=>d.answers.business_data_question=' ',d=>d.answers.workshop_other_expectation='x'.repeat(3001),d=>d.consent=false,d=>d.language='xx',d=>d.answers.ai_data_access=['invalid']]){data=make();edit(data);assert.throws(()=>validateSubmission(data),{status:400});}
 });
 test('schema extensions retain older fields and tolerate future extra columns',()=>{
  assert.deepEqual(responseHeaders.slice(0,legacyHeaders.length),legacyHeaders);
@@ -65,8 +61,19 @@ test('conditional workshop questions appear only when applicable and stale answe
  data.answers.workshop_other_expectation='';assert.equal(JSON.parse(validateSubmission(data).answers_json).workshop_other_expectation,null);
  data.answers.workshop_dataset_readiness='maybe';assert.doesNotThrow(()=>validateSubmission(data));data.answers.workshop_dataset_type={selected:['other'],other:''};assert.throws(()=>validateSubmission(data),{status:400});
 });
-test('first six questions preserve v1 wording and archived records retain old questions',async()=>{
+test('unchanged initial questions preserve v1 wording and archived records retain old questions',async()=>{
  const old=(await import('../public/survey-v1.js')).survey;
- for(let i=0;i<6;i++)for(const key of ['id','label','type','options'])assert.deepEqual(survey.questions[i][key],old.questions[i][key]);
+ for(const i of [0,1,3,4,5])for(const key of ['id','label','type','options'])assert.deepEqual(survey.questions[i][key],old.questions[i][key]);
  assert.equal(old.questions.length,8);assert.ok(responseHeaders.includes('tedious_task'));assert.ok(responseHeaders.includes('workshop_expectation'));
+});
+
+test('Q3 accepts combined file sources, stores them and preserves the previous questionnaire',async()=>{
+ const data=fixture();let value=toggleSelection(q('ai_data_access'),[],'cloud_storage',true);
+ value=toggleSelection(q('ai_data_access'),value,'local_files',true);value=toggleSelection(q('ai_data_access'),value,'manual_upload',true);
+ data.answers.ai_data_access=value;const record=validateSubmission(data);
+ assert.deepEqual(JSON.parse(record.ai_data_access),['cloud_storage','local_files','manual_upload']);
+ assert.ok(formatAnswer(getQuestions().find(q=>q.id==='ai_data_access'),value).includes('on my computer'));
+ assert.ok(answerError(q('ai_data_access'),[]));assert.ok(answerError(q('ai_data_access'),['local_files','local_files']));
+ const old=(await import('../public/survey-v2.js')).survey;assert.equal(old.questions[2].id,'desktop_ai_apps');assert.notEqual(old.version,survey.version);
+ assert.ok(responseHeaders.includes('desktop_ai_apps'));assert.equal(responseHeaders.at(-1),'ai_data_access');
 });

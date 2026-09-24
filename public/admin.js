@@ -1,3 +1,4 @@
+import { survey as v2, getQuestions as v2Questions, formatAnswer as formatV2 } from './survey-v2.js';
 import { survey as v1, getQuestions as v1Questions, formatAnswer as formatV1 } from './survey-v1.js';
 import { survey, getQuestions, formatAnswer } from './survey-config.js';
 import { survey as legacySource } from './survey-legacy.js';
@@ -33,6 +34,7 @@ function detail(id){
  const answers=answersFor(r),target=document.querySelector('#detail');target.classList.remove('hidden');
  let rows;
  if(current(r))rows=getQuestions(answers,'en').map(q=>[q.label,formatAnswer(q,answers[q.id],'en')]);
+ else if(r.survey_version===v2.version)rows=v2Questions(answers,'en').map(q=>[q.label,formatV2(q,answers[q.id],'en')]);
  else if(r.survey_version===v1.version)rows=v1Questions({},'en').map(q=>[q.label,formatV1(q,answers[q.id],'en')]);
  else if(r.survey_version===legacy.version){const qs=[...legacy.core,...(legacy.branches[r.branch]?.questions||[]),...legacy.closing];rows=qs.map(q=>[q.label,q.type==='text'?answers[q.id]||'—':q.options.filter(o=>Array.isArray(answers[q.id])?answers[q.id].includes(o.value):answers[q.id]===o.value).map(o=>o.label).join(', ')||'—']);}
  else rows=Object.entries(answers).map(([key,value])=>[key,typeof value==='object'?JSON.stringify(value):String(value??'—')]);

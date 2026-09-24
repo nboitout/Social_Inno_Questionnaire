@@ -1,6 +1,6 @@
 # Website text — review and editing master
 
-Updated: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-data-decisions-v2`.
+Updated: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-data-decisions-v3`.
 
 Edit the wording directly under **EN** and **RO**, then ask Codex to apply this file to the website. Keep the headings/IDs so each edit can be mapped back to its source. You can edit just one language and add a note asking for the other to be translated. Add editorial notes as `REVIEW NOTE: ...`.
 
@@ -637,85 +637,95 @@ AI is part of my workflow throughout much of the day
 
 AI face parte din modul meu de lucru în mare parte din zi
 
-### Q3 — desktop_ai_apps
+### Q3 — ai_data_access
 
 **EN**
 
-Which dedicated AI applications have you installed on your computer?
+Does your AI have access to your work files or data?
 
 **RO**
 
-Ce aplicații AI dedicate ai instalat pe computer?
+Are AI acces la fișierele sau datele tale de lucru?
 
-### desktop_ai_apps.chatgpt_desktop
+### Q3 helper
 
 **EN**
 
-ChatGPT desktop app
+We mean that you have connected or granted AI access to files, folders, cloud storage or other work sources — rather than manually uploading one file at a time. Select all that apply.
 
 **RO**
 
-Aplicația ChatGPT pentru desktop
+Ne referim la faptul că ai conectat AI sau i-ai acordat acces la fișiere, foldere, stocare în cloud sau alte surse de lucru — în loc să încarci manual câte un fișier. Selectează toate variantele care se aplică.
 
-### desktop_ai_apps.claude_desktop
+### ai_data_access.manual_chat
 
 **EN**
 
-Claude desktop app
+No — I mainly use AI through chat and provide information manually
 
 **RO**
 
-Aplicația Claude pentru desktop
+Nu — folosesc AI în principal prin chat și ofer informațiile manual
 
-### desktop_ai_apps.copilot
+### ai_data_access.manual_upload
 
 **EN**
 
-Microsoft Copilot
+I manually upload files when I need AI to work with them
 
 **RO**
 
-Microsoft Copilot
+Încarc manual fișiere când am nevoie ca AI să lucreze cu ele
 
-### desktop_ai_apps.antigravity
+### ai_data_access.cloud_storage
 
 **EN**
 
-Google Antigravity
+Yes — AI can access some of my cloud files or storage
 
 **RO**
 
-Google Antigravity
+Da — AI poate accesa unele dintre fișierele mele sau spațiile de stocare din cloud
 
-### desktop_ai_apps.other
+### Description
 
 **EN**
 
-Other AI application
+e.g. Google Drive, Dropbox, OneDrive
 
 **RO**
 
-Altă aplicație AI
+de exemplu, Google Drive, Dropbox, OneDrive
 
-### desktop_ai_apps.browser_only
+### ai_data_access.local_files
 
 **EN**
 
-None — I access AI only through a web browser
+Yes — AI can access files or folders on my computer
 
 **RO**
 
-Niciuna — accesez AI doar din browser
+Da — AI poate accesa fișiere sau foldere de pe computerul meu
 
-### desktop_ai_apps.no_computer_ai
+### ai_data_access.work_applications
 
 **EN**
 
-None — I don’t use AI on my computer
+Yes — AI is connected to other work applications or company data
 
 **RO**
 
-Niciuna — nu folosesc AI pe computer
+Da — AI este conectat la alte aplicații de lucru sau la datele companiei
+
+### ai_data_access.not_sure
+
+**EN**
+
+I'm not sure
+
+**RO**
+
+Nu sunt sigur(ă)
 
 ### Q4 — ai_working_mode
 

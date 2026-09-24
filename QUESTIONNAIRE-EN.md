@@ -71,23 +71,21 @@ Select all that apply, then indicate how you access each tool.
 - Several times a day
 - AI is part of my workflow throughout much of the day
 
-### Q3. Which dedicated AI applications have you installed on your computer?
+### Q3. Does your AI have access to your work files or data?
 
-<!-- question-id: desktop_ai_apps -->
+<!-- question-id: ai_data_access -->
 
 **Response format:** Select all that apply. Required.
 
-- ChatGPT desktop app
-- Claude desktop app
-- Microsoft Copilot
-- Google Antigravity
-- Other AI application
-- None — I access AI only through a web browser
-- None — I don’t use AI on my computer
+*We mean that you have connected or granted AI access to files, folders, cloud storage or other work sources — rather than manually uploading one file at a time.*
 
-**Other:** provide the tool or application name (up to 120 characters).
-
-*“None” choices cannot be combined with other choices.*
+- **No — I mainly use AI through chat and provide information manually**
+- **I manually upload files when I need AI to work with them**
+- **Yes — AI can access some of my cloud files or storage**
+  *e.g. Google Drive, Dropbox, OneDrive*
+- **Yes — AI can access files or folders on my computer**
+- **Yes — AI is connected to other work applications or company data**
+- **I'm not sure**
 
 ---
 

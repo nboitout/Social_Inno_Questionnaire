@@ -3,7 +3,7 @@ const option = (value, en, ro, extra = {}) => ({ value, label: l(en, ro), ...ext
 const question = (id, section, type, en, ro, options, extra = {}) => ({ id, section, type, label: l(en, ro), required: true, ...(options ? { options } : {}), ...extra });
 export const accessTypes = [option('free','Free','Gratuit'),option('paid_personally','Paid personally','Plătit personal'),option('provided_by_company','Provided by my company','Oferit de companie')];
 export const survey = {
-  version: '2026-09-data-decisions-v3', draft: false,
+  version: '2026-09-data-decisions-v2', draft: false,
   sections: [
     { id: 'today', title: l('Your AI today','AI în activitatea ta de azi'), description: l('Tools, access and habits','Instrumente, acces și obiceiuri') },
     { id: 'working', title: l('How you work with AI','Cum lucrezi cu AI'), description: l('Your everyday experience','Experiența ta de zi cu zi') },
@@ -18,14 +18,9 @@ export const survey = {
     question('ai_usage_frequency','today','single','How often do you use AI in a typical working week?','Cât de des folosești AI într-o săptămână obișnuită de lucru?',[
       option('none',"I don’t use AI",'Nu folosesc AI'),option('less_than_weekly','Less than once a week','Mai rar de o dată pe săptămână'),option('few_times_weekly','A few times a week','De câteva ori pe săptămână'),option('daily','Every working day','În fiecare zi de lucru'),option('several_times_daily','Several times a day','De mai multe ori pe zi'),option('throughout_day','AI is part of my workflow throughout much of the day','AI face parte din modul meu de lucru în mare parte din zi')
     ]),
-    question('ai_data_access','today','multi','Does your AI have access to your work files or data?','Are AI acces la fișierele sau datele tale de lucru?',[
-      option('manual_chat','No — I mainly use AI through chat and provide information manually','Nu — folosesc AI în principal prin chat și ofer informațiile manual'),
-      option('manual_upload','I manually upload files when I need AI to work with them','Încarc manual fișiere când am nevoie ca AI să lucreze cu ele'),
-      option('cloud_storage','Yes — AI can access some of my cloud files or storage','Da — AI poate accesa unele dintre fișierele mele sau spațiile de stocare din cloud',{description:l('e.g. Google Drive, Dropbox, OneDrive','de exemplu, Google Drive, Dropbox, OneDrive')}),
-      option('local_files','Yes — AI can access files or folders on my computer','Da — AI poate accesa fișiere sau foldere de pe computerul meu'),
-      option('work_applications','Yes — AI is connected to other work applications or company data','Da — AI este conectat la alte aplicații de lucru sau la datele companiei'),
-      option('not_sure',"I'm not sure",'Nu sunt sigur(ă)')
-    ],{helper:l('We mean that you have connected or granted AI access to files, folders, cloud storage or other work sources — rather than manually uploading one file at a time. Select all that apply.','Ne referim la faptul că ai conectat AI sau i-ai acordat acces la fișiere, foldere, stocare în cloud sau alte surse de lucru — în loc să încarci manual câte un fișier. Selectează toate variantele care se aplică.')}),
+    question('desktop_ai_apps','today','multi','Which dedicated AI applications have you installed on your computer?','Ce aplicații AI dedicate ai instalat pe computer?',[
+      option('chatgpt_desktop','ChatGPT desktop app','Aplicația ChatGPT pentru desktop'),option('claude_desktop','Claude desktop app','Aplicația Claude pentru desktop'),option('copilot','Microsoft Copilot','Microsoft Copilot'),option('antigravity','Google Antigravity','Google Antigravity'),option('other','Other AI application','Altă aplicație AI'),option('browser_only','None — I access AI only through a web browser','Niciuna — accesez AI doar din browser',{exclusive:true}),option('no_computer_ai',"None — I don’t use AI on my computer",'Niciuna — nu folosesc AI pe computer',{exclusive:true})
+    ],{structured:true,other:true}),
     question('ai_working_mode','working','single','Which statement best describes how you usually work with AI today?','Care afirmație descrie cel mai bine modul în care lucrezi de obicei cu AI?',[
       option('occasional_help','Occasional help','Ajutor ocazional',{description:l('I mainly do the work myself and ask AI questions or use it for specific tasks when needed.','În general, lucrez singur și pun întrebări AI sau îl folosesc pentru anumite sarcini, când am nevoie.')}),
       option('ai_assistant','AI assistant','AI ca asistent',{description:l('I do the work myself, but AI frequently helps me write, search, analyse, summarize or generate ideas.','Lucrez singur, dar AI mă ajută frecvent să scriu, să caut informații, să analizez, să rezum sau să generez idei.')}),
