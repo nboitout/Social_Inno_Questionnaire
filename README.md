@@ -78,6 +78,6 @@ Use Vercel Firewall rate limits for `/api/login`, `/api/visit`, and `/api/submit
 
 The respondent experience defaults to English. The EN/RO switch translates the landing page, every question and answer choice, validation, privacy copy, review and completion screens. A remembered explicit Romanian selection takes precedence on later visits. Switching languages preserves question position, answers and free-text comments.
 
-Romanian questionnaire content remains in `public/survey-config.js`; English question/option labels are in `public/survey-en.js`; interface translations are in `public/i18n.js`. Only authored template text is translated. Stored answer IDs and the Google Sheets schema remain identical in both languages. The admin interface remains Romanian.
+Romanian questionnaire content remains in `public/survey-config.js`; English question/option labels are in `public/survey-en.js`; interface translations are in `public/i18n.js`. Only authored template text is translated. Stored answer IDs and the Google Sheets schema remain identical in both languages. The admin interface is English-only, including login, errors, dashboard, response details and English question/option labels. Respondent comments and raw exported data retain their original content.
 
 The official white Social Innovation Solutions logo is served locally from `public/assets/sis-logo-white.png`, with its original proportions and a dark backdrop on both survey and admin pages. Asset provenance is recorded beside it.

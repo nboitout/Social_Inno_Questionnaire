@@ -13,4 +13,4 @@ export default route(async (req, res) => {
   method(req, 'GET'); requireAdmin(req);
   const [responses, events] = configured() ? await Promise.all([readRows('Responses'), readRows('Visits')]) : [[], []];
   res.json({ configured: configured(), live: live(), demo: demoMode(), metrics: summarize(responses, events), responses: uniqueRows(responses, 'submission_id').reverse(), events: uniqueRows(events, 'event_id').reverse().slice(0, 100) });
-});
+}, 'The admin service is temporarily unavailable. Please try again.');
