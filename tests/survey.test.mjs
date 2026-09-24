@@ -1,18 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {survey,getQuestions,answerError,toggleSelection,requiredQuestion} from '../public/survey-config.js';
+import {survey,getQuestions,answerError,toggleSelection,requiredQuestion,pruneAnswers} from '../public/survey-config.js';
 import {validateSubmission} from '../api/submit.js';
 import {summarize} from '../api/admin.js';
 import {fixture} from './fixtures.mjs';
 import {responseHeaders,validateHeaders,legacyHeaders} from '../lib/store.js';
 const q=id=>getQuestions().find(q=>q.id===id);
-for(const language of ['en','ro'])test(`${language}: eight-question payload stores separate structured answers`,()=>{
+for(const language of ['en','ro'])test(`${language}: ten-question payload stores separate structured answers`,()=>{
  const data=fixture(language),record=validateSubmission(data);
- assert.equal(getQuestions().length,8);assert.equal(survey.sections.length,3);
- assert.equal(record.survey_version,'2026-09-v1');assert.equal(record.response_language,language);
+ assert.equal(getQuestions().length,10);assert.equal(survey.sections.length,4);
+ assert.equal(record.survey_version,'2026-09-data-decisions-v2');assert.equal(record.response_language,language);
  assert.deepEqual(JSON.parse(record.ai_tools),data.answers.ai_tools);assert.deepEqual(JSON.parse(record.desktop_ai_apps),data.answers.desktop_ai_apps);
  assert.deepEqual(JSON.parse(record.ai_tasks_last_3_months),data.answers.ai_tasks_last_3_months);
- assert.equal(record.tedious_task,data.answers.tedious_task);assert.deepEqual(JSON.parse(record.answers_json),data.answers);
+ assert.equal(record.business_data_question,data.answers.business_data_question);assert.deepEqual(JSON.parse(record.answers_json),data.answers);
  assert.ok(survey.questions.every(q=>responseHeaders.includes(q.id)));
 });
 test('tool access and Other fields are required and stale unselected details are rejected',()=>{
@@ -30,14 +30,14 @@ test('exclusive choices clear selections, access and Other details',()=>{
  assert.deepEqual(toggleSelection(q('ai_tasks_last_3_months'),['none'],'analyse_data',true),['analyse_data']);
  assert.ok(answerError(q('desktop_ai_apps'),{selected:['browser_only','no_computer_ai']}));
 });
-test('non-users can skip working style; other respondents must select one; eight questions remain visible',()=>{
+test('non-users can skip working style; other respondents must select one; ten main questions remain visible',()=>{
  const data=fixture('en',true);assert.equal(requiredQuestion(q('ai_working_mode'),data.answers),false);assert.doesNotThrow(()=>validateSubmission(data));
  const user=fixture();delete user.answers.ai_working_mode;assert.throws(()=>validateSubmission(user),{status:400});
- assert.equal(getQuestions(data.answers).length,8);
+ assert.equal(getQuestions(data.answers).filter(q=>!q.condition).length,10);
 });
 test('server rejects invalid, old-version, extra, duplicate and oversized answers',()=>{
  const make=()=>fixture();let data=make();data.version='2026-09-draft-1';assert.throws(()=>validateSubmission(data),{code:'version'});
- for(const edit of [d=>d.answers.extra='x',d=>d.answers.ai_usage_frequency='bogus',d=>d.answers.ai_tasks_last_3_months=['translate','translate'],d=>d.answers.tedious_task=' ',d=>d.answers.workshop_expectation='x'.repeat(3001),d=>d.consent=false,d=>d.language='xx',d=>d.answers.desktop_ai_apps={selected:['other'],other:''}]){data=make();edit(data);assert.throws(()=>validateSubmission(data),{status:400});}
+ for(const edit of [d=>d.answers.extra='x',d=>d.answers.ai_usage_frequency='bogus',d=>d.answers.ai_tasks_last_3_months=['translate','translate'],d=>d.answers.business_data_question=' ',d=>d.answers.workshop_other_expectation='x'.repeat(3001),d=>d.consent=false,d=>d.language='xx',d=>d.answers.desktop_ai_apps={selected:['other'],other:''}]){data=make();edit(data);assert.throws(()=>validateSubmission(data),{status:400});}
 });
 test('schema extensions retain older fields and tolerate future extra columns',()=>{
  assert.deepEqual(responseHeaders.slice(0,legacyHeaders.length),legacyHeaders);
@@ -56,4 +56,17 @@ test('participant identity is required, bounded, trimmed and stored separately',
  const data=fixture();data.participant.first_name=' Ana ';const record=validateSubmission(data);assert.equal(record.first_name,'Ana');assert.equal(record.family_name,'Popescu');assert.equal(record.company_name,'Exemplu SRL');assert.equal(JSON.parse(record.answers_json).first_name,undefined);
  for(const value of [undefined,null,[],{}, {...data.participant,first_name:' '},{...data.participant,family_name:42},{...data.participant,company_name:'x'.repeat(201)},{...data.participant,first_name:'x'.repeat(101)},{...data.participant,extra:'x'}])assert.throws(()=>validateSubmission({...data,participant:value}),{status:400});
  assert.throws(()=>validateHeaders(responseHeaders.filter(h=>h!=='first_name'),'Responses',true));assert.doesNotThrow(()=>validateHeaders(responseHeaders.filter(h=>h!=='first_name'),'Responses'));
+});
+
+test('conditional workshop questions appear only when applicable and stale answers are removed',()=>{
+ const data=fixture();data.answers.data_to_decisions_interest='another_topic';assert.throws(()=>validateSubmission(data),{status:400});data.answers.workshop_preferred_topic='AI for marketing';data.answers.workshop_dataset_type={selected:['sales','other'],other:'Warranty claims'};let record=validateSubmission(data);assert.equal(record.workshop_preferred_topic,'AI for marketing');assert.deepEqual(JSON.parse(record.workshop_dataset_type),data.answers.workshop_dataset_type);
+ for(const readiness of ['yes','probably','maybe']){data.answers.workshop_dataset_readiness=readiness;assert.ok(getQuestions(data.answers).some(q=>q.id==='workshop_dataset_type'));}
+ data.answers.workshop_dataset_readiness='cannot_use_company_data';data.answers.data_to_decisions_interest='useful';assert.throws(()=>validateSubmission(data),{status:400});data.answers=pruneAnswers(data.answers);assert.equal(data.answers.workshop_preferred_topic,undefined);assert.equal(data.answers.workshop_dataset_type,undefined);assert.doesNotThrow(()=>validateSubmission(data));
+ data.answers.workshop_other_expectation='';assert.equal(JSON.parse(validateSubmission(data).answers_json).workshop_other_expectation,null);
+ data.answers.workshop_dataset_readiness='maybe';assert.doesNotThrow(()=>validateSubmission(data));data.answers.workshop_dataset_type={selected:['other'],other:''};assert.throws(()=>validateSubmission(data),{status:400});
+});
+test('first six questions preserve v1 wording and archived records retain old questions',async()=>{
+ const old=(await import('../public/survey-v1.js')).survey;
+ for(let i=0;i<6;i++)for(const key of ['id','label','type','options'])assert.deepEqual(survey.questions[i][key],old.questions[i][key]);
+ assert.equal(old.questions.length,8);assert.ok(responseHeaders.includes('tedious_task'));assert.ok(responseHeaders.includes('workshop_expectation'));
 });

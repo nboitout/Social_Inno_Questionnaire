@@ -13,7 +13,7 @@ export function validateSubmission(data) {
  if(Object.keys(data.answers).some(id=>!questions.some(q=>q.id===id)))fail(text('invalid',language));
  for(const q of questions){const error=answerError(q,data.answers[q.id],data.answers,language);if(error)fail(error,'validation',q.id);}
  if(!Number.isFinite(data.durationSeconds)||data.durationSeconds<0||data.durationSeconds>604800)fail(text('invalid',language));
- const answers=Object.fromEntries(questions.map(q=>[q.id,data.answers[q.id]??null]));
+ const answers=Object.fromEntries(questions.map(q=>[q.id,q.type==='text'&&!data.answers[q.id]?.trim()?null:data.answers[q.id]??null]));
  return {...Object.fromEntries(participantFields.map(f=>[f.id,data.participant[f.id].trim()])),submission_id:data.submissionId,submitted_at:new Date().toISOString(),survey_version:survey.version,branch:'',session_id:data.sessionId,duration_seconds:Math.round(data.durationSeconds),response_language:language,...Object.fromEntries(questions.map(q=>[q.id,q.type==='multi'?JSON.stringify(answers[q.id]):answers[q.id]??''])),answers_json:JSON.stringify(answers)};
 }
 export default route(async(req,res)=>{

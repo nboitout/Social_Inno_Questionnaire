@@ -3,12 +3,11 @@ const option = (value, en, ro, extra = {}) => ({ value, label: l(en, ro), ...ext
 const question = (id, section, type, en, ro, options, extra = {}) => ({ id, section, type, label: l(en, ro), required: true, ...(options ? { options } : {}), ...extra });
 export const accessTypes = [option('free','Free','Gratuit'),option('paid_personally','Paid personally','Plătit personal'),option('provided_by_company','Provided by my company','Oferit de companie')];
 export const survey = {
-  version: '2026-09-data-decisions-v2', draft: false,
+  version: '2026-09-v1', draft: false,
   sections: [
     { id: 'today', title: l('Your AI today','AI în activitatea ta de azi'), description: l('Tools, access and habits','Instrumente, acces și obiceiuri') },
     { id: 'working', title: l('How you work with AI','Cum lucrezi cu AI'), description: l('Your everyday experience','Experiența ta de zi cu zi') },
-    { id: 'company', title: l('AI in your company','AI în compania ta'), description: l('AI adoption in your business','Adoptarea AI în afacerea ta') },
-    { id: 'workshop', title: l('Shaping the workshop','Pregătirea workshopului'), description: l('From data to decisions','De la date la decizii') }
+    { id: 'company', title: l('AI in your company','AI în compania ta'), description: l('Business needs and the workshop','Nevoi concrete și așteptări de la atelier') }
   ],
   questions: [
     question('ai_tools','today','multi','Which AI tools do you personally use today?','Ce instrumente AI folosești personal în prezent?',[
@@ -34,34 +33,12 @@ export const survey = {
     question('company_ai_adoption','company','single','How is AI currently used in your company?','Cum este folosit AI în prezent în compania ta?',[
       option('not_used','AI is not currently used','AI nu este folosit în prezent'),option('individual_experiments','Individuals experiment with AI independently','Unele persoane experimentează cu AI din proprie inițiativă'),option('regular_employee_use','Several employees regularly use AI tools','Mai mulți angajați folosesc regulat instrumente AI'),option('systematic_teams','AI is systematically used in some teams or business processes','AI este folosit sistematic în anumite echipe sau procese'),option('production_workflows','We have AI-powered workflows or automations in production','Avem fluxuri de lucru sau automatizări cu AI folosite efectiv în activitate'),option('embedded_core','AI is embedded in our products, services or core operations','AI este integrat în produsele, serviciile sau operațiunile noastre de bază')
     ]),
-    question('data_to_decisions_interest','workshop','single','How useful would this workshop theme be for you and your company?','Cât de utilă ar fi această temă de workshop pentru tine și compania ta?',[
-      option('very_useful','Very useful — I would definitely like to work on this','Foarte utilă — cu siguranță aș vrea să lucrăm pe această temă'),
-      option('useful','Useful — this is relevant to my business','Utilă — este relevantă pentru afacerea mea'),
-      option('possibly_useful','Possibly useful — depending on the example or data','Posibil utilă — depinde de exemplu sau de date'),
-      option('not_relevant','Not particularly relevant to my current priorities','Nu este foarte relevantă pentru prioritățile mele actuale'),
-      option('another_topic','I would prefer another AI topic','Aș prefera o altă temă legată de AI')
-    ],{theme:true}),
-    question('workshop_preferred_topic','workshop','text','What would you prefer to work on?','Pe ce temă ai prefera să lucrăm?',null,{maxLength:3000,condition:{id:'data_to_decisions_interest',values:['another_topic']},number:'7a'}),
-    question('workshop_dataset_readiness','workshop','single','Could you bring a real business dataset to use during the workshop?','Ai putea aduce un set de date reale din afacerea ta pentru a-l folosi în workshop?',[
-      option('yes','Yes — I already know which dataset I would bring','Da — știu deja ce set de date aș aduce'),
-      option('probably','Probably — I need to identify or prepare it','Probabil — trebuie să îl identific sau să îl pregătesc'),
-      option('maybe','Maybe — I would need help choosing an appropriate dataset','Poate — aș avea nevoie de ajutor pentru a alege un set de date potrivit'),
-      option('cannot_use_company_data','No — I cannot use company data for this exercise','Nu — nu pot folosi datele companiei pentru acest exercițiu'),
-      option('no_suitable_dataset','No — I don’t currently have a suitable dataset','Nu — momentan nu am un set de date potrivit')
-    ],{helper:l('A simple Excel or CSV file is enough. The dataset does not need to be large or sophisticated.','Un simplu fișier Excel sau CSV este suficient. Setul de date nu trebuie să fie mare sau complex.'),datasetNotice:true}),
-    question('workshop_dataset_type','workshop','multi','What kind of data could you bring?','Ce fel de date ai putea aduce?',[
-      option('sales','Sales','Vânzări'),option('customers','Customers','Clienți'),option('finance','Finance','Finanțe'),option('marketing','Marketing','Marketing'),option('operations','Operations','Operațiuni'),option('inventory','Inventory','Stocuri'),option('production','Production','Producție'),option('logistics','Logistics','Logistică'),option('hr','HR','Resurse umane'),option('projects_services','Projects & services','Proiecte și servicii'),option('other','Other','Altele')
-    ],{condition:{id:'workshop_dataset_readiness',values:['yes','probably','maybe']},number:'8a',required:false,structured:true,other:true,datasetNotice:true}),
-    question('business_data_question','workshop','text','If you could ask one important question about your business and have AI analyse your data to help answer it, what would you ask?','Dacă ai putea pune o întrebare importantă despre afacerea ta, iar AI ar analiza datele pentru a te ajuta să răspunzi, care ar fi întrebarea?',null,{maxLength:3000,helper:l('These are only examples — please use a question that matters to your own business.','Acestea sunt doar exemple — alege o întrebare care contează pentru afacerea ta.'),examples:[l('Why did our margin decline?','De ce ne-a scăzut marja?'),l('Which customers are most valuable?','Care sunt cei mai valoroși clienți?'),l('What drives our sales?','Ce factori influențează vânzările?'),l('Where are our operational bottlenecks?','Unde apar blocaje în operațiunile noastre?'),l('Which products are underperforming?','Ce produse au rezultate sub așteptări?')]}),
-    question('workshop_other_expectation','workshop','text','Is there anything else you would particularly like us to cover during the AI workshop?','Mai este ceva ce ți-ai dori în mod special să abordăm în workshopul AI?',null,{required:false,maxLength:3000,helper:l('You can mention another AI topic, task, process, business problem or question that you would particularly like us to address.','Poți menționa o altă temă legată de AI, o sarcină, un proces, o problemă de afaceri sau o întrebare pe care ai vrea să o abordăm.')})
+    question('tedious_task','company','text','If AI could take one tedious or time-consuming task off your desk tomorrow, what would you choose?','Dacă AI ar putea prelua mâine o sarcină plictisitoare sau care îți consumă mult timp, ce ai alege?',null,{maxLength:3000,helper:l('Think about something repetitive, frustrating or time-consuming that you or your team currently do manually.','Gândește-te la ceva repetitiv, frustrant sau care consumă mult timp și pe care tu sau echipa îl faceți acum manual.')}),
+    question('workshop_expectation','company','text','What would you most like to learn or achieve during the AI workshop?','Ce ți-ai dori cel mai mult să înveți sau să obții în cadrul atelierului de AI?',null,{maxLength:3000,helper:l('You can mention a question, task, process or business problem you would particularly like us to address.','Poți menționa o întrebare, o sarcină, un proces sau o problemă de afaceri pe care ai vrea să o abordăm.')})
   ]
 };
 export const localized = (value, language='en') => typeof value === 'object' && value !== null ? value[language] || value.en : value;
-export function getQuestions(answers={},language='en') { return survey.questions.filter(q=>!q.condition||q.condition.values.includes(answers[q.condition.id])).map(q=>({...q,label:localized(q.label,language),helper:localized(q.helper,language),options:q.options?.map(o=>({...o,label:localized(o.label,language),description:localized(o.description,language)}))})); }
-let mainNumber=0;for(const q of survey.questions)if(!q.condition)q.number=++mainNumber;
-export const mainQuestionCount=mainNumber;
-export function pruneAnswers(answers){const visible=new Set(getQuestions(answers).map(q=>q.id));return Object.fromEntries(Object.entries(answers).filter(([key])=>visible.has(key)));}
-export const workshopTheme={title:l('AI for Business: From Data to Decisions','AI pentru afaceri: de la date la decizii'),subtitle:l('Bring your own business data. Use AI to analyse it, understand it and decide what to do next.','Vino cu date din propria afacere. Folosește AI pentru a le analiza, a le înțelege și a decide ce urmează.'),body:l('The practical session would show how AI can help you explore real business data, identify patterns and drivers, create useful analyses and visualisations, and support better business decisions.','Sesiunea practică ar arăta cum te poate ajuta AI să explorezi date reale de afaceri, să identifici tipare și factori de influență, să creezi analize și vizualizări utile și să iei decizii de afaceri mai bine fundamentate.')};
+export function getQuestions(_answers={},language='en') { return survey.questions.map(q=>({...q,label:localized(q.label,language),helper:localized(q.helper,language),options:q.options?.map(o=>({...o,label:localized(o.label,language),description:localized(o.description,language)}))})); }
 export function requiredQuestion(q, answers={}) { return q.required && !(q.optionalForNonUsers && (answers.ai_tools?.selected?.includes('none') || answers.ai_usage_frequency==='none')); }
 export function selectedValues(q,value) { return q.structured ? value?.selected || [] : Array.isArray(value) ? value : []; }
 export function toggleSelection(q,value,selected,checked) {
@@ -76,7 +53,6 @@ const object=value=>value!==null && typeof value==='object' && !Array.isArray(va
 export function answerError(q,value,answers={},language='en') {
   const error=key=>localized(errors[key],language);
   if(!requiredQuestion(q,answers) && (value===undefined || value===null || value===''))return '';
-  if(!q.required && (typeof value==='string'&&!value.trim() || q.structured && object(value) && Array.isArray(value.selected) && !value.selected.length && !value.other && Object.keys(value).every(k=>['selected','other'].includes(k))))return '';
   if(q.type==='text')return typeof value==='string' && value.trim().length>0 && value.length<=q.maxLength ? '' : error('text');
   if(q.type==='single')return q.options.some(o=>o.value===value) ? '' : error('required');
   if(q.structured && (!object(value) || Object.keys(value).some(k=>!['selected',...(q.access?['access']:[]),'other'].includes(k))))return error('invalid');
@@ -86,7 +62,7 @@ export function answerError(q,value,answers={},language='en') {
     const tools=choices.filter(v=>v!=='none');
     if(!object(value.access)||Object.keys(value.access).length!==tools.length||tools.some(v=>!Object.hasOwn(value.access,v)||!accessTypes.some(a=>a.value===value.access[v])))return error('access');
   }
-  if(q.other && choices.includes('other') && (typeof value.other!=='string'||!value.other.trim()||value.other.length>120))return q.id==='workshop_dataset_type'?(language==='ro'?'Descrie celălalt tip de date (cel mult 120 de caractere).':'Describe the other data type (up to 120 characters).'):error('other');
+  if(q.other && choices.includes('other') && (typeof value.other!=='string'||!value.other.trim()||value.other.length>120))return error('other');
   if(q.other && !choices.includes('other') && value.other!==undefined && value.other!=='')return error('invalid');
   return '';
 }
@@ -100,7 +76,7 @@ export function formatAnswer(q,value,language='en') {
     const name=id==='other'&&value.other?`${o?.label}: ${value.other}`:o?.label || id;
     const access=q.access&&value.access?.[id];
     return name+(access?` — ${localized(accessTypes.find(a=>a.value===access)?.label,language)||access}`:'');
-  }).join('\n') || empty;
+  }).join('\n');
 }
 
 export const participantFields = [

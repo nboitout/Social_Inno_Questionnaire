@@ -7,9 +7,9 @@ import {readRows,responseHeaders,appendRow} from '../lib/store.js';
 import {fixture} from './fixtures.mjs';
 const req=data=>({method:'POST',headers:{host:'localhost',origin:'http://localhost','content-type':'application/json'},body:data});
 const response=()=>({headers:{},setHeader(k,v){this.headers[k]=v;},status(n){this.code=n;return this;},json(data){this.data=data;}});
-test('live submission persists all eight answers and retries do not duplicate',async()=>{
+test('live submission persists all ten answers and retries do not duplicate',async()=>{
  process.env.DATA_MODE='demo';process.env.SURVEY_LIVE='true';
- try{const data=fixture();data.answers.tedious_task='=SUM(1,2)';let res=response();await submit(req(data),res);assert.equal(res.data.ok,true);res=response();await submit(req(data),res);const rows=await readRows('Responses');assert.equal(rows.length,1);assert.equal(rows[0].tedious_task,'=SUM(1,2)');assert.equal(JSON.parse(rows[0].ai_tools).access.chatgpt,'paid_personally');
+ try{const data=fixture();data.answers.business_data_question='=SUM(1,2)';let res=response();await submit(req(data),res);assert.equal(res.data.ok,true);res=response();await submit(req(data),res);const rows=await readRows('Responses');assert.equal(rows.length,1);assert.equal(rows[0].business_data_question,'=SUM(1,2)');assert.equal(JSON.parse(rows[0].ai_tools).access.chatgpt,'paid_personally');
  res=response();await submit(req({...data,answers:{}}),res);assert.equal(res.code,400);assert.equal(res.data.code,'validation');
  res=response();await visit(req({eventId:randomUUID(),sessionId:data.sessionId,event:'visit'}),res);assert.equal(res.data.recorded,true);
  }finally{delete process.env.DATA_MODE;delete process.env.SURVEY_LIVE;}

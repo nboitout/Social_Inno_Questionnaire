@@ -12,5 +12,5 @@ test('EN and RO stay synchronized, including option descriptions and helper copy
 test('validation and access labels are bilingual while user text remains unchanged',()=>{
  const tools=getQuestions()[0];assert.notEqual(answerError(tools,undefined,{},'en'),answerError(tools,undefined,{},'ro'));
  const data=fixture();assert.match(formatAnswer(tools,data.answers.ai_tools),/Paid personally/);
- const q=getQuestions({},'ro').find(q=>q.id==='tedious_task');const input='Raport săptămânal <script>example</script>';assert.equal(formatAnswer(q,input,'en'),input);
+ const q=getQuestions({},'ro').find(q=>q.id==='business_data_question');const input='Raport săptămânal <script>example</script>';assert.equal(formatAnswer(q,input,'en'),input);
 });

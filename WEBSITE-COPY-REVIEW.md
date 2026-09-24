@@ -1,12 +1,12 @@
 # Website text — review and editing master
 
-Snapshot: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-v1`.
+Updated: 24 September 2026 · Base website source commit: `74c40d0`; updated with participant identification · Questionnaire: `2026-09-data-decisions-v2`.
 
 Edit the wording directly under **EN** and **RO**, then ask Codex to apply this file to the website. Keep the headings/IDs so each edit can be mapped back to its source. You can edit just one language and add a note asking for the other to be translated. Add editorial notes as `REVIEW NOTE: ...`.
 
 This is a review document, not a live configuration file: edits here do not change the website automatically. No passwords, credentials or participant responses are included. Braces such as `{time}` identify dynamic values, not literal copy. Arrows/icons are added by the interface.
 
-Scope: current homepage, eight questions, respondent interface, privacy, validation, confirmation, English administration and technical messages. Old questionnaire versions used only for historical records are excluded; they should retain their original wording. Unused translation entries are separated at the end.
+Scope: current homepage, ten main questions, respondent interface, privacy, validation, confirmation, English administration and technical messages. Old questionnaire versions used only for historical records are excluded; they should retain their original wording. Unused translation entries are separated at the end.
 
 ## 1. Homepage
 
@@ -128,7 +128,7 @@ A WORKSHOP SHAPED AROUND YOU
 
 UN ATELIER ADAPTAT NEVOILOR TALE
 
-The CTA appends → and opens the participant identification form before the eight questions. “Continue” appears when there is saved progress. The three cards reuse the section text in section 3.
+The CTA appends → and opens the participant identification form before the ten main questions. “Continue” appears when there is saved progress. The three cards reuse the section text in section 3.
 
 ## 2. Branding, shared navigation and privacy
 
@@ -270,7 +270,7 @@ Social Innovation Solutions · Înapoi la prezentare
 
 ## Participant identification — before Q1
 
-Required first name, family name and company name. These are participant metadata, separate from the eight survey questions. Details are included in review, stored with the response and displayed in the English admin dashboard.
+Required first name, family name and company name. These are participant metadata, separate from the ten main survey questions. Details are included in review, stored with the response and displayed in the English admin dashboard.
 
 ### ui.participantTitle
 
@@ -443,15 +443,41 @@ Business needs and the workshop
 
 Nevoi concrete și așteptări de la atelier
 
-## 4. The eight questionnaire questions
+## 4. Questionnaire — Data to Decisions revision
 
-Keep option IDs intact when editing wording. Changes in meaning, added/removed options or altered validation rules should be called out in a review note so existing records remain interpretable.
+Ten main questions and two conditional follow-ups. Q7a requires an alternative topic when selected; Q8a dataset type is optional. Q10 is optional.
 
-## Q1 — `ai_tools`
+### workshopTheme.title
 
-Type: multi. Required.
+**EN**
 
-### ai_tools.question
+AI for Business: From Data to Decisions
+
+**RO**
+
+AI pentru afaceri: de la date la decizii
+
+### workshopTheme.subtitle
+
+**EN**
+
+Bring your own business data. Use AI to analyse it, understand it and decide what to do next.
+
+**RO**
+
+Vino cu date din propria afacere. Folosește AI pentru a le analiza, a le înțelege și a decide ce urmează.
+
+### workshopTheme.body
+
+**EN**
+
+The practical session would show how AI can help you explore real business data, identify patterns and drivers, create useful analyses and visualisations, and support better business decisions.
+
+**RO**
+
+Sesiunea practică ar arăta cum te poate ajuta AI să explorezi date reale de afaceri, să identifici tipare și factori de influență, să creezi analize și vizualizări utile și să iei decizii de afaceri mai bine fundamentate.
+
+### Q1 — ai_tools
 
 **EN**
 
@@ -471,7 +497,7 @@ Select all that apply, then indicate how you access each tool.
 
 Selectează toate variantele care se aplică, apoi precizează cum ai acces la fiecare instrument.
 
-### ai_tools.option.chatgpt
+### ai_tools.chatgpt
 
 **EN**
 
@@ -481,7 +507,7 @@ ChatGPT
 
 ChatGPT
 
-### ai_tools.option.claude
+### ai_tools.claude
 
 **EN**
 
@@ -491,7 +517,7 @@ Claude
 
 Claude
 
-### ai_tools.option.gemini
+### ai_tools.gemini
 
 **EN**
 
@@ -501,7 +527,7 @@ Gemini
 
 Gemini
 
-### ai_tools.option.copilot
+### ai_tools.copilot
 
 **EN**
 
@@ -511,7 +537,7 @@ Microsoft Copilot
 
 Microsoft Copilot
 
-### ai_tools.option.perplexity
+### ai_tools.perplexity
 
 **EN**
 
@@ -521,7 +547,7 @@ Perplexity
 
 Perplexity
 
-### ai_tools.option.other
+### ai_tools.other
 
 **EN**
 
@@ -531,9 +557,7 @@ Other
 
 Alt instrument
 
-### ai_tools.option.none
-
-_Exclusive choice: clears the other selections._
+### ai_tools.none
 
 **EN**
 
@@ -543,45 +567,7 @@ None
 
 Niciunul
 
-Selecting Other reveals **ui.other**; name limit: 120 characters.
-
-Each selected tool also has an access selector.
-
-### tool-access.free
-
-**EN**
-
-Free
-
-**RO**
-
-Gratuit
-
-### tool-access.paid_personally
-
-**EN**
-
-Paid personally
-
-**RO**
-
-Plătit personal
-
-### tool-access.provided_by_company
-
-**EN**
-
-Provided by my company
-
-**RO**
-
-Oferit de companie
-
-## Q2 — `ai_usage_frequency`
-
-Type: single. Required.
-
-### ai_usage_frequency.question
+### Q2 — ai_usage_frequency
 
 **EN**
 
@@ -591,9 +577,7 @@ How often do you use AI in a typical working week?
 
 Cât de des folosești AI într-o săptămână obișnuită de lucru?
 
-Helper uses **ui.one** below.
-
-### ai_usage_frequency.option.none
+### ai_usage_frequency.none
 
 **EN**
 
@@ -603,7 +587,7 @@ I don’t use AI
 
 Nu folosesc AI
 
-### ai_usage_frequency.option.less_than_weekly
+### ai_usage_frequency.less_than_weekly
 
 **EN**
 
@@ -613,7 +597,7 @@ Less than once a week
 
 Mai rar de o dată pe săptămână
 
-### ai_usage_frequency.option.few_times_weekly
+### ai_usage_frequency.few_times_weekly
 
 **EN**
 
@@ -623,7 +607,7 @@ A few times a week
 
 De câteva ori pe săptămână
 
-### ai_usage_frequency.option.daily
+### ai_usage_frequency.daily
 
 **EN**
 
@@ -633,7 +617,7 @@ Every working day
 
 În fiecare zi de lucru
 
-### ai_usage_frequency.option.several_times_daily
+### ai_usage_frequency.several_times_daily
 
 **EN**
 
@@ -643,7 +627,7 @@ Several times a day
 
 De mai multe ori pe zi
 
-### ai_usage_frequency.option.throughout_day
+### ai_usage_frequency.throughout_day
 
 **EN**
 
@@ -653,11 +637,7 @@ AI is part of my workflow throughout much of the day
 
 AI face parte din modul meu de lucru în mare parte din zi
 
-## Q3 — `desktop_ai_apps`
-
-Type: multi. Required.
-
-### desktop_ai_apps.question
+### Q3 — desktop_ai_apps
 
 **EN**
 
@@ -667,9 +647,7 @@ Which dedicated AI applications have you installed on your computer?
 
 Ce aplicații AI dedicate ai instalat pe computer?
 
-Helper uses **ui.many** below.
-
-### desktop_ai_apps.option.chatgpt_desktop
+### desktop_ai_apps.chatgpt_desktop
 
 **EN**
 
@@ -679,7 +657,7 @@ ChatGPT desktop app
 
 Aplicația ChatGPT pentru desktop
 
-### desktop_ai_apps.option.claude_desktop
+### desktop_ai_apps.claude_desktop
 
 **EN**
 
@@ -689,7 +667,7 @@ Claude desktop app
 
 Aplicația Claude pentru desktop
 
-### desktop_ai_apps.option.copilot
+### desktop_ai_apps.copilot
 
 **EN**
 
@@ -699,7 +677,7 @@ Microsoft Copilot
 
 Microsoft Copilot
 
-### desktop_ai_apps.option.antigravity
+### desktop_ai_apps.antigravity
 
 **EN**
 
@@ -709,7 +687,7 @@ Google Antigravity
 
 Google Antigravity
 
-### desktop_ai_apps.option.other
+### desktop_ai_apps.other
 
 **EN**
 
@@ -719,9 +697,7 @@ Other AI application
 
 Altă aplicație AI
 
-### desktop_ai_apps.option.browser_only
-
-_Exclusive choice: clears the other selections._
+### desktop_ai_apps.browser_only
 
 **EN**
 
@@ -731,9 +707,7 @@ None — I access AI only through a web browser
 
 Niciuna — accesez AI doar din browser
 
-### desktop_ai_apps.option.no_computer_ai
-
-_Exclusive choice: clears the other selections._
+### desktop_ai_apps.no_computer_ai
 
 **EN**
 
@@ -743,13 +717,7 @@ None — I don’t use AI on my computer
 
 Niciuna — nu folosesc AI pe computer
 
-Selecting Other reveals **ui.other**; name limit: 120 characters.
-
-## Q4 — `ai_working_mode`
-
-Type: single. Optional if Q1 or Q2 says the participant does not use AI.
-
-### ai_working_mode.question
+### Q4 — ai_working_mode
 
 **EN**
 
@@ -759,9 +727,7 @@ Which statement best describes how you usually work with AI today?
 
 Care afirmație descrie cel mai bine modul în care lucrezi de obicei cu AI?
 
-Helper uses **ui.one** below.
-
-### ai_working_mode.option.occasional_help
+### ai_working_mode.occasional_help
 
 **EN**
 
@@ -771,7 +737,7 @@ Occasional help
 
 Ajutor ocazional
 
-### ai_working_mode.option.occasional_help.description
+### ai_working_mode.occasional_help.description
 
 **EN**
 
@@ -781,7 +747,7 @@ I mainly do the work myself and ask AI questions or use it for specific tasks wh
 
 În general, lucrez singur și pun întrebări AI sau îl folosesc pentru anumite sarcini, când am nevoie.
 
-### ai_working_mode.option.ai_assistant
+### ai_working_mode.ai_assistant
 
 **EN**
 
@@ -791,7 +757,7 @@ AI assistant
 
 AI ca asistent
 
-### ai_working_mode.option.ai_assistant.description
+### ai_working_mode.ai_assistant.description
 
 **EN**
 
@@ -801,7 +767,7 @@ I do the work myself, but AI frequently helps me write, search, analyse, summari
 
 Lucrez singur, dar AI mă ajută frecvent să scriu, să caut informații, să analizez, să rezum sau să generez idei.
 
-### ai_working_mode.option.ai_first_some_tasks
+### ai_working_mode.ai_first_some_tasks
 
 **EN**
 
@@ -811,7 +777,7 @@ AI-first for some tasks
 
 Încep cu AI pentru unele sarcini
 
-### ai_working_mode.option.ai_first_some_tasks.description
+### ai_working_mode.ai_first_some_tasks.description
 
 **EN**
 
@@ -821,7 +787,7 @@ For some work, I start with AI. I give it the objective and relevant information
 
 Pentru unele sarcini, încep cu AI. Îi dau obiectivul și informațiile sau fișierele relevante, îl las să producă un prim rezultat, apoi îl verific și îl îmbunătățesc.
 
-### ai_working_mode.option.ai_first_default
+### ai_working_mode.ai_first_default
 
 **EN**
 
@@ -831,7 +797,7 @@ AI-first by default
 
 De regulă, încep cu AI
 
-### ai_working_mode.option.ai_first_default.description
+### ai_working_mode.ai_first_default.description
 
 **EN**
 
@@ -841,7 +807,7 @@ Whenever appropriate, I ask AI to perform the work. My role is increasingly to s
 
 Când este potrivit, îi cer AI să facă munca. Rolul meu este tot mai mult să stabilesc obiectivul, să ofer context, să ghidez, să verific și să iau decizii, în loc să creez sau să editez totul manual.
 
-### ai_working_mode.option.multi_step_agentic
+### ai_working_mode.multi_step_agentic
 
 **EN**
 
@@ -851,7 +817,7 @@ Multi-step / agentic work
 
 Lucru în mai mulți pași / cu agenți AI
 
-### ai_working_mode.option.multi_step_agentic.description
+### ai_working_mode.multi_step_agentic.description
 
 **EN**
 
@@ -861,11 +827,7 @@ I regularly let AI perform multi-step work across files, tools or processes and 
 
 Las în mod regulat AI să lucreze în mai mulți pași, folosind fișiere, instrumente sau procese, pentru a produce rezultate finale sau a executa părți dintr-un flux de lucru.
 
-## Q5 — `ai_tasks_last_3_months`
-
-Type: multi. Required.
-
-### ai_tasks_last_3_months.question
+### Q5 — ai_tasks_last_3_months
 
 **EN**
 
@@ -875,9 +837,7 @@ What have you personally asked AI to do during the last 3 months?
 
 Ce i-ai cerut personal AI să facă în ultimele 3 luni?
 
-Helper uses **ui.many** below.
-
-### ai_tasks_last_3_months.option.questions_search
+### ai_tasks_last_3_months.questions_search
 
 **EN**
 
@@ -887,7 +847,7 @@ Ask questions or search for information
 
 Să răspundă la întrebări sau să caute informații
 
-### ai_tasks_last_3_months.option.write_rewrite
+### ai_tasks_last_3_months.write_rewrite
 
 **EN**
 
@@ -897,7 +857,7 @@ Write or rewrite text
 
 Să scrie sau să reformuleze texte
 
-### ai_tasks_last_3_months.option.translate
+### ai_tasks_last_3_months.translate
 
 **EN**
 
@@ -907,7 +867,7 @@ Translate content
 
 Să traducă materiale
 
-### ai_tasks_last_3_months.option.analyse_documents
+### ai_tasks_last_3_months.analyse_documents
 
 **EN**
 
@@ -917,7 +877,7 @@ Analyse a PDF or document
 
 Să analizeze un PDF sau un document
 
-### ai_tasks_last_3_months.option.analyse_data
+### ai_tasks_last_3_months.analyse_data
 
 **EN**
 
@@ -927,7 +887,7 @@ Analyse a spreadsheet or business data
 
 Să analizeze un tabel sau date de afaceri
 
-### ai_tasks_last_3_months.option.presentations
+### ai_tasks_last_3_months.presentations
 
 **EN**
 
@@ -937,7 +897,7 @@ Create a presentation
 
 Să creeze o prezentare
 
-### ai_tasks_last_3_months.option.edit_files
+### ai_tasks_last_3_months.edit_files
 
 **EN**
 
@@ -947,7 +907,7 @@ Create or modify files directly
 
 Să creeze sau să modifice direct fișiere
 
-### ai_tasks_last_3_months.option.email_calendar
+### ai_tasks_last_3_months.email_calendar
 
 **EN**
 
@@ -957,7 +917,7 @@ Work with my email or calendar
 
 Să lucreze cu emailul sau calendarul meu
 
-### ai_tasks_last_3_months.option.multi_step
+### ai_tasks_last_3_months.multi_step
 
 **EN**
 
@@ -967,7 +927,7 @@ Execute a multi-step task
 
 Să execute o sarcină în mai mulți pași
 
-### ai_tasks_last_3_months.option.recurring_automation
+### ai_tasks_last_3_months.recurring_automation
 
 **EN**
 
@@ -977,7 +937,7 @@ Automate a recurring workflow
 
 Să automatizeze un proces recurent
 
-### ai_tasks_last_3_months.option.build_app_agent
+### ai_tasks_last_3_months.build_app_agent
 
 **EN**
 
@@ -987,9 +947,7 @@ Build an AI application or agent
 
 Să construiască o aplicație sau un agent AI
 
-### ai_tasks_last_3_months.option.none
-
-_Exclusive choice: clears the other selections._
+### ai_tasks_last_3_months.none
 
 **EN**
 
@@ -999,11 +957,7 @@ None of these
 
 Niciuna dintre acestea
 
-## Q6 — `company_ai_adoption`
-
-Type: single. Required.
-
-### company_ai_adoption.question
+### Q6 — company_ai_adoption
 
 **EN**
 
@@ -1013,9 +967,7 @@ How is AI currently used in your company?
 
 Cum este folosit AI în prezent în compania ta?
 
-Helper uses **ui.one** below.
-
-### company_ai_adoption.option.not_used
+### company_ai_adoption.not_used
 
 **EN**
 
@@ -1025,7 +977,7 @@ AI is not currently used
 
 AI nu este folosit în prezent
 
-### company_ai_adoption.option.individual_experiments
+### company_ai_adoption.individual_experiments
 
 **EN**
 
@@ -1035,7 +987,7 @@ Individuals experiment with AI independently
 
 Unele persoane experimentează cu AI din proprie inițiativă
 
-### company_ai_adoption.option.regular_employee_use
+### company_ai_adoption.regular_employee_use
 
 **EN**
 
@@ -1045,7 +997,7 @@ Several employees regularly use AI tools
 
 Mai mulți angajați folosesc regulat instrumente AI
 
-### company_ai_adoption.option.systematic_teams
+### company_ai_adoption.systematic_teams
 
 **EN**
 
@@ -1055,7 +1007,7 @@ AI is systematically used in some teams or business processes
 
 AI este folosit sistematic în anumite echipe sau procese
 
-### company_ai_adoption.option.production_workflows
+### company_ai_adoption.production_workflows
 
 **EN**
 
@@ -1065,7 +1017,7 @@ We have AI-powered workflows or automations in production
 
 Avem fluxuri de lucru sau automatizări cu AI folosite efectiv în activitate
 
-### company_ai_adoption.option.embedded_core
+### company_ai_adoption.embedded_core
 
 **EN**
 
@@ -1075,53 +1027,359 @@ AI is embedded in our products, services or core operations
 
 AI este integrat în produsele, serviciile sau operațiunile noastre de bază
 
-## Q7 — `tedious_task`
-
-Type: text. Required. Current maximum: 3000 characters.
-
-### tedious_task.question
+### Q7 — data_to_decisions_interest
 
 **EN**
 
-If AI could take one tedious or time-consuming task off your desk tomorrow, what would you choose?
+How useful would this workshop theme be for you and your company?
 
 **RO**
 
-Dacă AI ar putea prelua mâine o sarcină plictisitoare sau care îți consumă mult timp, ce ai alege?
+Cât de utilă ar fi această temă de workshop pentru tine și compania ta?
 
-### tedious_task.helper
+### data_to_decisions_interest.very_useful
 
 **EN**
 
-Think about something repetitive, frustrating or time-consuming that you or your team currently do manually.
+Very useful — I would definitely like to work on this
 
 **RO**
 
-Gândește-te la ceva repetitiv, frustrant sau care consumă mult timp și pe care tu sau echipa îl faceți acum manual.
+Foarte utilă — cu siguranță aș vrea să lucrăm pe această temă
 
-## Q8 — `workshop_expectation`
-
-Type: text. Required. Current maximum: 3000 characters.
-
-### workshop_expectation.question
+### data_to_decisions_interest.useful
 
 **EN**
 
-What would you most like to learn or achieve during the AI workshop?
+Useful — this is relevant to my business
 
 **RO**
 
-Ce ți-ai dori cel mai mult să înveți sau să obții în cadrul atelierului de AI?
+Utilă — este relevantă pentru afacerea mea
 
-### workshop_expectation.helper
+### data_to_decisions_interest.possibly_useful
 
 **EN**
 
-You can mention a question, task, process or business problem you would particularly like us to address.
+Possibly useful — depending on the example or data
 
 **RO**
 
-Poți menționa o întrebare, o sarcină, un proces sau o problemă de afaceri pe care ai vrea să o abordăm.
+Posibil utilă — depinde de exemplu sau de date
+
+### data_to_decisions_interest.not_relevant
+
+**EN**
+
+Not particularly relevant to my current priorities
+
+**RO**
+
+Nu este foarte relevantă pentru prioritățile mele actuale
+
+### data_to_decisions_interest.another_topic
+
+**EN**
+
+I would prefer another AI topic
+
+**RO**
+
+Aș prefera o altă temă legată de AI
+
+### Q7a — workshop_preferred_topic
+
+**EN**
+
+What would you prefer to work on?
+
+**RO**
+
+Pe ce temă ai prefera să lucrăm?
+
+Shown when data_to_decisions_interest is another_topic.
+
+### Q8 — workshop_dataset_readiness
+
+**EN**
+
+Could you bring a real business dataset to use during the workshop?
+
+**RO**
+
+Ai putea aduce un set de date reale din afacerea ta pentru a-l folosi în workshop?
+
+### workshop_dataset_readiness.helper
+
+**EN**
+
+A simple Excel or CSV file is enough. The dataset does not need to be large or sophisticated.
+
+**RO**
+
+Un simplu fișier Excel sau CSV este suficient. Setul de date nu trebuie să fie mare sau complex.
+
+### workshop_dataset_readiness.yes
+
+**EN**
+
+Yes — I already know which dataset I would bring
+
+**RO**
+
+Da — știu deja ce set de date aș aduce
+
+### workshop_dataset_readiness.probably
+
+**EN**
+
+Probably — I need to identify or prepare it
+
+**RO**
+
+Probabil — trebuie să îl identific sau să îl pregătesc
+
+### workshop_dataset_readiness.maybe
+
+**EN**
+
+Maybe — I would need help choosing an appropriate dataset
+
+**RO**
+
+Poate — aș avea nevoie de ajutor pentru a alege un set de date potrivit
+
+### workshop_dataset_readiness.cannot_use_company_data
+
+**EN**
+
+No — I cannot use company data for this exercise
+
+**RO**
+
+Nu — nu pot folosi datele companiei pentru acest exercițiu
+
+### workshop_dataset_readiness.no_suitable_dataset
+
+**EN**
+
+No — I don’t currently have a suitable dataset
+
+**RO**
+
+Nu — momentan nu am un set de date potrivit
+
+### Q8a — workshop_dataset_type
+
+**EN**
+
+What kind of data could you bring?
+
+**RO**
+
+Ce fel de date ai putea aduce?
+
+Shown when workshop_dataset_readiness is yes / probably / maybe.
+
+### workshop_dataset_type.sales
+
+**EN**
+
+Sales
+
+**RO**
+
+Vânzări
+
+### workshop_dataset_type.customers
+
+**EN**
+
+Customers
+
+**RO**
+
+Clienți
+
+### workshop_dataset_type.finance
+
+**EN**
+
+Finance
+
+**RO**
+
+Finanțe
+
+### workshop_dataset_type.marketing
+
+**EN**
+
+Marketing
+
+**RO**
+
+Marketing
+
+### workshop_dataset_type.operations
+
+**EN**
+
+Operations
+
+**RO**
+
+Operațiuni
+
+### workshop_dataset_type.inventory
+
+**EN**
+
+Inventory
+
+**RO**
+
+Stocuri
+
+### workshop_dataset_type.production
+
+**EN**
+
+Production
+
+**RO**
+
+Producție
+
+### workshop_dataset_type.logistics
+
+**EN**
+
+Logistics
+
+**RO**
+
+Logistică
+
+### workshop_dataset_type.hr
+
+**EN**
+
+HR
+
+**RO**
+
+Resurse umane
+
+### workshop_dataset_type.projects_services
+
+**EN**
+
+Projects & services
+
+**RO**
+
+Proiecte și servicii
+
+### workshop_dataset_type.other
+
+**EN**
+
+Other
+
+**RO**
+
+Altele
+
+### Q9 — business_data_question
+
+**EN**
+
+If you could ask one important question about your business and have AI analyse your data to help answer it, what would you ask?
+
+**RO**
+
+Dacă ai putea pune o întrebare importantă despre afacerea ta, iar AI ar analiza datele pentru a te ajuta să răspunzi, care ar fi întrebarea?
+
+### business_data_question.helper
+
+**EN**
+
+These are only examples — please use a question that matters to your own business.
+
+**RO**
+
+Acestea sunt doar exemple — alege o întrebare care contează pentru afacerea ta.
+
+### business_data_question.example.1
+
+**EN**
+
+Why did our margin decline?
+
+**RO**
+
+De ce ne-a scăzut marja?
+
+### business_data_question.example.2
+
+**EN**
+
+Which customers are most valuable?
+
+**RO**
+
+Care sunt cei mai valoroși clienți?
+
+### business_data_question.example.3
+
+**EN**
+
+What drives our sales?
+
+**RO**
+
+Ce factori influențează vânzările?
+
+### business_data_question.example.4
+
+**EN**
+
+Where are our operational bottlenecks?
+
+**RO**
+
+Unde apar blocaje în operațiunile noastre?
+
+### business_data_question.example.5
+
+**EN**
+
+Which products are underperforming?
+
+**RO**
+
+Ce produse au rezultate sub așteptări?
+
+### Q10 — workshop_other_expectation
+
+**EN**
+
+Is there anything else you would particularly like us to cover during the AI workshop?
+
+**RO**
+
+Mai este ceva ce ți-ai dori în mod special să abordăm în workshopul AI?
+
+### workshop_other_expectation.helper
+
+**EN**
+
+You can mention another AI topic, task, process, business problem or question that you would particularly like us to address.
+
+**RO**
+
+Poți menționa o altă temă legată de AI, o sarcină, un proces, o problemă de afaceri sau o întrebare pe care ai vrea să o abordăm.
 
 ## 5. Question controls, prompts and accessibility
 
@@ -1539,7 +1797,7 @@ Ai încheiat previzualizarea.
 
 **EN**
 
-You have explored all eight questions. Your test responses have not been submitted.
+You have explored all ten main questions. Your test responses have not been submitted.
 
 **RO**
 
@@ -1715,7 +1973,7 @@ Question/option labels reuse the English wording in sections 3–4. Respondent f
 
 - **metrics-and-recent-activity.5**: Completed responses
 
-- **metrics-and-recent-activity.6**: {currentResponses} v1 · {legacyResponses} legacy
+- **metrics-and-recent-activity.6**: {currentResponses} current · {legacyResponses} legacy
 
 - **metrics-and-recent-activity.7**: Completion rate
 
@@ -1723,7 +1981,7 @@ Question/option labels reuse the English wording in sections 3–4. Respondent f
 
 - **metrics-and-recent-activity.9**: Personal AI usage frequency
 
-- **metrics-and-recent-activity.10**: v1 responses only · frequency is shown separately from working style.
+- **metrics-and-recent-activity.10**: Current questionnaire responses only · frequency is shown separately from working style.
 
 - **metrics-and-recent-activity.11**: Recent activity
 
@@ -2026,3 +2284,46 @@ Se încarcă chestionarul…
 Add any instructions about emphasis, layout, deleting elements or translating one language here.
 
 REVIEW NOTE:
+
+### ui.proposedTheme
+
+**EN**
+
+Proposed workshop theme
+
+**RO**
+
+Tema propusă pentru workshop
+
+
+### ui.examples
+
+**EN**
+
+For example:
+
+**RO**
+
+De exemplu:
+
+
+### ui.dataOther
+
+**EN**
+
+Other data type
+
+**RO**
+
+Alt tip de date
+
+
+### ui.datasetNotice
+
+**EN**
+
+For the workshop, participants should use an appropriately sanitized or anonymized dataset. Do not include passwords, credentials, unnecessary personal data, or confidential information that should not be shared with the AI environment used during the session.
+
+**RO**
+
+Pentru workshop, participanții ar trebui să folosească un set de date curățat de informații sensibile sau anonimizat corespunzător. Nu include parole, credențiale, date personale inutile sau informații confidențiale care nu ar trebui partajate cu mediul AI folosit în sesiune.
