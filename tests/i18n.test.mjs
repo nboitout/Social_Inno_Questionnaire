@@ -1,23 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { survey } from '../public/survey-config.js';
-import { translateSurvey } from '../public/survey-en.js';
-import { t, html, setLanguage } from '../public/i18n.js';
-test('all English branches preserve Romanian question IDs, option values and routing', () => {
-  const en = translateSurvey(survey);
-  for (const branch of Object.keys(survey.branches)) {
-    const roQuestions = [...survey.core, ...survey.branches[branch].questions, ...survey.closing];
-    const enQuestions = [...en.core, ...en.branches[branch].questions, ...en.closing];
-    assert.equal(enQuestions.length, 17);
-    enQuestions.forEach((q,i) => { assert.equal(q.id, roQuestions[i].id); assert.notEqual(q.label, roQuestions[i].label); assert.deepEqual(q.options?.map(o=>o.value),roQuestions[i].options?.map(o=>o.value)); });
-  }
-  assert.equal(translateSurvey(survey,'ro'),survey);
+import {survey,getQuestions,answerError,formatAnswer} from '../public/survey-config.js';
+import {copy,text} from '../public/i18n.js';
+import {fixture} from './fixtures.mjs';
+test('EN and RO stay synchronized, including option descriptions and helper copy',()=>{
+ const en=getQuestions({},'en'),ro=getQuestions({},'ro');
+ for(let i=0;i<en.length;i++){assert.equal(en[i].id,ro[i].id);assert.notEqual(en[i].label,ro[i].label);assert.deepEqual(en[i].options?.map(o=>o.value),ro[i].options?.map(o=>o.value));}
+ for(const q of survey.questions){assert.ok(q.label.en&&q.label.ro);if(q.helper)assert.ok(q.helper.en&&q.helper.ro);for(const o of q.options||[])if(o.description)assert.ok(o.description.en&&o.description.ro);}
+ for(const key of Object.keys(copy))assert.ok(text(key,'en')&&text(key,'ro'));
 });
-test('English is the translation default, Romanian can be selected, and respondent text is unchanged', () => {
-  setLanguage('en'); assert.equal(t('Continuă'),'Continue');
-  const respondentText='Compania ta <script>alert(1)</script>';
-  assert.equal(html`<p>Compania ta: ${respondentText}</p>`, `<p>Your company: ${respondentText}</p>`);
-  assert.equal(t('Verifică răspunsurile înainte de '),'Review your answers before ');
-  setLanguage('ro'); assert.equal(t('Continuă'),'Continuă');
-  setLanguage('en');
+test('validation and access labels are bilingual while user text remains unchanged',()=>{
+ const tools=getQuestions()[0];assert.notEqual(answerError(tools,undefined,{},'en'),answerError(tools,undefined,{},'ro'));
+ const data=fixture();assert.match(formatAnswer(tools,data.answers.ai_tools),/Paid personally/);
+ const q=getQuestions({},'ro').find(q=>q.id==='tedious_task');const input='Raport săptămânal <script>example</script>';assert.equal(formatAnswer(q,input,'en'),input);
 });

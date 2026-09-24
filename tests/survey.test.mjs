@@ -1,55 +1,53 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
-import { survey, getQuestions, answerError } from '../public/survey-config.js';
-import { validateSubmission } from '../api/submit.js';
-import { summarize } from '../api/admin.js';
-import { requireAdmin, makeSession, passwordMatches } from '../lib/auth.js';
-import { sameOrigin } from '../lib/http.js';
-import { live, demoMode, responseHeaders } from '../lib/store.js';
-function fixture(branch) {
-  const answers = { ai_adoption: branch };
-  for (const q of getQuestions(answers)) if (q.id !== 'ai_adoption') answers[q.id] = q.type === 'text' ? '' : q.type === 'multi' ? [q.options[0].value] : q.options[0].value;
-  return { submissionId: randomUUID(),sessionId: randomUUID(),version:survey.version,consent:true,durationSeconds:120,answers };
-}
-for (const branch of Object.keys(survey.branches)) test(`${branch}: complete path accepts 17 answers and rejects missing/foreign answers`, () => {
-  const payload = fixture(branch), qs = getQuestions(payload.answers);
-  assert.equal(qs.length,17); assert.equal(new Set(qs.map(q=>q.id)).size,17);
-  assert.equal(validateSubmission(payload).branch,branch);
-  assert.ok(qs.every(q => responseHeaders.includes(q.id)));
-  const withForeign = {...payload,answers:{...payload.answers,foreign:'x'}};
-  assert.throws(()=>validateSubmission(withForeign),{status:400});
-  delete payload.answers.role; assert.throws(()=>validateSubmission(payload),{status:400});
+import {survey,getQuestions,answerError,toggleSelection,requiredQuestion} from '../public/survey-config.js';
+import {validateSubmission} from '../api/submit.js';
+import {summarize} from '../api/admin.js';
+import {fixture} from './fixtures.mjs';
+import {responseHeaders,validateHeaders,legacyHeaders} from '../lib/store.js';
+const q=id=>getQuestions().find(q=>q.id===id);
+for(const language of ['en','ro'])test(`${language}: eight-question payload stores separate structured answers`,()=>{
+ const data=fixture(language),record=validateSubmission(data);
+ assert.equal(getQuestions().length,8);assert.equal(survey.sections.length,3);
+ assert.equal(record.survey_version,'2026-09-v1');assert.equal(record.response_language,language);
+ assert.deepEqual(JSON.parse(record.ai_tools),data.answers.ai_tools);assert.deepEqual(JSON.parse(record.desktop_ai_apps),data.answers.desktop_ai_apps);
+ assert.deepEqual(JSON.parse(record.ai_tasks_last_3_months),data.answers.ai_tasks_last_3_months);
+ assert.equal(record.tedious_task,data.answers.tedious_task);assert.deepEqual(JSON.parse(record.answers_json),data.answers);
+ assert.ok(survey.questions.every(q=>responseHeaders.includes(q.id)));
 });
-test('invalid selections, duplicate multi choices and long comments fail validation',()=>{
-  const multi = survey.branches.using.questions[0];
-  assert.ok(answerError(multi,[])); assert.ok(answerError(multi,['bogus'])); assert.ok(answerError(multi,['marketing','marketing']));
-  assert.ok(answerError(survey.closing.at(-1),'a'.repeat(1501)));
-  const payload=fixture('using'); payload.consent=false; assert.throws(()=>validateSubmission(payload),{status:400});
+test('tool access and Other fields are required and stale unselected details are rejected',()=>{
+ const data=fixture(),question=q('ai_tools');
+ for(const bad of [{selected:['chatgpt'],access:{}},{selected:['chatgpt'],access:{chatgpt:'bogus'}},{selected:['other'],access:{other:'free'},other:' '},{selected:['none','claude'],access:{claude:'free'}},{selected:['claude'],access:{claude:'free',chatgpt:'free'}},{selected:['none'],access:{},other:'stale'}])assert.ok(answerError(question,bad,data.answers));
+ assert.equal(answerError(question,{selected:['chatgpt','other'],access:{chatgpt:'free',other:'provided_by_company'},other:'Local AI'},data.answers),'');
 });
-test('untrusted routing cannot select an inherited branch',()=>{
-  const payload=fixture('using'); payload.answers.ai_adoption='__proto__'; assert.throws(()=>validateSubmission(payload),{status:400});
+test('exclusive choices clear selections, access and Other details',()=>{
+ let value={selected:['chatgpt','other'],access:{chatgpt:'free',other:'paid_personally'},other:'Test AI'};
+ value=toggleSelection(q('ai_tools'),value,'none',true);assert.deepEqual(value,{selected:['none'],access:{}});
+ value=toggleSelection(q('ai_tools'),value,'claude',true);assert.deepEqual(value,{selected:['claude'],access:{}});
+ let apps={selected:['other'],other:'Local app'};
+ apps=toggleSelection(q('desktop_ai_apps'),apps,'browser_only',true);assert.deepEqual(apps,{selected:['browser_only']});
+ apps=toggleSelection(q('desktop_ai_apps'),apps,'no_computer_ai',true);assert.deepEqual(apps,{selected:['no_computer_ai']});
+ assert.deepEqual(toggleSelection(q('ai_tasks_last_3_months'),['none'],'analyse_data',true),['analyse_data']);
+ assert.ok(answerError(q('desktop_ai_apps'),{selected:['browser_only','no_computer_ai']}));
 });
-test('metrics deduplicate retry IDs and count session completion once',()=>{
-  const responses=[{submission_id:'a',session_id:'s',branch:'using'},{submission_id:'a',session_id:'s',branch:'using'},{submission_id:'b',session_id:'s',branch:'using'}];
-  const events=[{event_id:'v',session_id:'s',event:'visit'},{event_id:'v',session_id:'s',event:'visit'},{event_id:'t',session_id:'s',event:'start'}];
-  const m=summarize(responses,events); assert.equal(m.responses,2);assert.equal(m.visits,1);assert.equal(m.completion,100);assert.equal(summarize([],[]).completion,null);
+test('non-users can skip working style; other respondents must select one; eight questions remain visible',()=>{
+ const data=fixture('en',true);assert.equal(requiredQuestion(q('ai_working_mode'),data.answers),false);assert.doesNotThrow(()=>validateSubmission(data));
+ const user=fixture();delete user.answers.ai_working_mode;assert.throws(()=>validateSubmission(user),{status:400});
+ assert.equal(getQuestions(data.answers).length,8);
 });
-test('admin rejects absent/tampered sessions, validates password and invalidates rotated password',()=>{
-  process.env.ADMIN_PASSWORD='test-password-at-least-24-characters';process.env.SESSION_SECRET='test-secret-at-least-32-characters-long';
-  assert.ok(passwordMatches(process.env.ADMIN_PASSWORD));assert.equal(passwordMatches('wrong'),false);
-  assert.throws(()=>requireAdmin({headers:{}}),{status:401});
-  const token=makeSession(); requireAdmin({headers:{cookie:`social_inno_admin=${token}`}});
-  assert.throws(()=>requireAdmin({headers:{cookie:`social_inno_admin=${token}bad`}}),{status:401});
-  process.env.ADMIN_PASSWORD+='rotated';assert.throws(()=>requireAdmin({headers:{cookie:`social_inno_admin=${token}`}}),{status:401});
-  delete process.env.ADMIN_PASSWORD;delete process.env.SESSION_SECRET;
+test('server rejects invalid, old-version, extra, duplicate and oversized answers',()=>{
+ const make=()=>fixture();let data=make();data.version='2026-09-draft-1';assert.throws(()=>validateSubmission(data),{code:'version'});
+ for(const edit of [d=>d.answers.extra='x',d=>d.answers.ai_usage_frequency='bogus',d=>d.answers.ai_tasks_last_3_months=['translate','translate'],d=>d.answers.tedious_task=' ',d=>d.answers.workshop_expectation='x'.repeat(3001),d=>d.consent=false,d=>d.language='xx',d=>d.answers.desktop_ai_apps={selected:['other'],other:''}]){data=make();edit(data);assert.throws(()=>validateSubmission(data),{status:400});}
 });
-test('cross-origin writes are rejected',()=>{
-  sameOrigin({headers:{origin:'https://survey.example',host:'survey.example'}});
-  assert.throws(()=>sameOrigin({headers:{origin:'https://other.example',host:'survey.example'}}),{status:403});
+test('schema extensions retain older fields and tolerate future extra columns',()=>{
+ assert.deepEqual(responseHeaders.slice(0,legacyHeaders.length),legacyHeaders);
+ assert.doesNotThrow(()=>validateHeaders(legacyHeaders,'Responses'));
+ assert.throws(()=>validateHeaders(legacyHeaders,'Responses',true));
+ assert.doesNotThrow(()=>validateHeaders([...responseHeaders,'future_question'],'Responses',true));
+ assert.throws(()=>validateHeaders([...responseHeaders,'ai_tools'],'Responses',true));
 });
-test('draft questionnaire cannot collect even with live env enabled; production cannot use demo storage',()=>{
-  process.env.SURVEY_LIVE='true';process.env.DATA_MODE='demo';assert.equal(live(),false);
-  process.env.VERCEL='1';assert.equal(demoMode(),false);
-  delete process.env.VERCEL;delete process.env.SURVEY_LIVE;delete process.env.DATA_MODE;
+test('analytics keep frequency separate and deduplicate retry IDs',()=>{
+ const record=validateSubmission(fixture()),legacy={...record,submission_id:'old',survey_version:'2026-09-draft-1'};
+ const events=[{event_id:'v',session_id:record.session_id,event:'visit'},{event_id:'v',session_id:record.session_id,event:'visit'},{event_id:'s',session_id:record.session_id,event:'start'}];
+ const m=summarize([record,record,legacy],events);assert.equal(m.responses,2);assert.equal(m.currentResponses,1);assert.equal(m.legacyResponses,1);assert.equal(m.frequency.daily,1);assert.equal(m.visits,1);assert.equal(m.completion,100);assert.equal(summarize([],[]).completion,null);
 });

@@ -1,120 +1,90 @@
-import { survey as baseSurvey, answerError as rawAnswerError } from './survey-config.js';
-import { translateSurvey } from './survey-en.js';
-import { t, html, setLanguage } from './i18n.js';
-let language = 'en';
-try { language = localStorage.getItem('social-inno-language') === 'ro' ? 'ro' : 'en'; } catch {}
-setLanguage(language);
-let survey = translateSurvey(baseSurvey, language);
-function getQuestions(answers = {}) { return [...survey.core, ...(survey.branches[answers.ai_adoption]?.questions || []), ...survey.closing]; }
-function answerError(q, value) { return t(rawAnswerError(q, value)); }
-
-const main = document.querySelector('main');
-const KEY = 'social-inno-draft-v1';
-const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const storage = { get(key) { try { return localStorage.getItem(key); } catch { return null; } }, set(key, value) { try { localStorage.setItem(key, value); } catch {} }, remove(key) { try { localStorage.removeItem(key); } catch {} } };
-let draft;
-try { draft = JSON.parse(storage.get(KEY)); } catch {}
-if (!draft || draft.version !== survey.version || Date.now() - draft.savedAt > 7 * 86400000) draft = null;
-let answers = draft?.answers && typeof draft.answers === 'object' && !Array.isArray(draft.answers) ? draft.answers : {};
-let position = Number.isInteger(draft?.position) ? Math.max(0, Math.min(draft.position, getQuestions(answers).length - 1)) : 0;
-let sessionId;
-try { sessionId = sessionStorage.getItem('social-inno-session') || crypto.randomUUID(); sessionStorage.setItem('social-inno-session', sessionId); } catch { sessionId = crypto.randomUUID(); }
-let submissionId = draft?.submissionId || crypto.randomUUID();
-let startedAt = draft?.startedAt || Date.now();
-let page = 'home', config = { live: false }, busy = false, consent = false;
-function save() { storage.set(KEY, JSON.stringify({ version: survey.version, answers, position, submissionId, startedAt, savedAt: Date.now() })); }
-function reset() { answers = {}; position = 0; submissionId = crypto.randomUUID(); startedAt = Date.now(); consent = false; storage.remove(KEY); }
-function focusTitle() { main.querySelector('h1,h2')?.focus(); window.scrollTo({ top: 0, behavior: 'instant' }); }
-async function request(path, payload) {
-  const response = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(25000) });
-  const data = await response.json(); if (!response.ok) throw new Error(data.error || t('Nu am putut salva răspunsul. Încearcă din nou.')); return data;
+import { survey, getQuestions, localized, accessTypes, selectedValues, toggleSelection, requiredQuestion, answerError, formatAnswer } from './survey-config.js';
+import { text } from './i18n.js';
+const main=document.querySelector('main');
+const KEY=`social-inno-${survey.version}`;
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const storage={get(key){try{return localStorage.getItem(key);}catch{return null;}},set(key,value){try{localStorage.setItem(key,value);}catch{}},remove(key){try{localStorage.removeItem(key);}catch{}}};
+let language=storage.get('social-inno-language')==='ro'?'ro':'en';
+const t=key=>text(key,language);
+let draft;try{draft=JSON.parse(storage.get(KEY));}catch{}
+if(!draft||draft.version!==survey.version||!Number.isFinite(draft.savedAt)||Date.now()-draft.savedAt>7*86400000){draft=null;storage.remove(KEY);}
+let answers=draft?.answers&&typeof draft.answers==='object'&&!Array.isArray(draft.answers)?draft.answers:{};
+let position=Number.isInteger(draft?.position)?Math.max(0,Math.min(7,draft.position)):0;
+let startedAt=draft?.startedAt||Date.now(),submissionId=draft?.submissionId||crypto.randomUUID();
+let sessionId;try{sessionId=sessionStorage.getItem('social-inno-session')||crypto.randomUUID();sessionStorage.setItem('social-inno-session',sessionId);}catch{sessionId=crypto.randomUUID();}
+let page='home',config={live:false},busy=false,consent=false;
+function save(){storage.set(KEY,JSON.stringify({version:survey.version,answers,position,startedAt,submissionId,savedAt:Date.now()}));}
+function reset(){answers={};position=0;startedAt=Date.now();submissionId=crypto.randomUUID();consent=false;storage.remove(KEY);}
+function focusTitle(){main.querySelector('h1,h2')?.focus();window.scrollTo({top:0,behavior:'instant'});}
+async function request(path,payload){
+ const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(25000)});
+ const data=await r.json();if(!r.ok){const e=new Error(data.error);e.code=data.code;e.questionId=data.questionId;throw e;}return data;
 }
-function track(event) {
-  if (!config.live) return;
-  try { if (event === 'start' && sessionStorage.getItem('social-inno-start')) return; } catch {}
-  request('/api/visit', { eventId: crypto.randomUUID(), sessionId, event }).then(() => { if (event === 'start') try { sessionStorage.setItem('social-inno-start', '1'); } catch {} }).catch(() => {});
+function track(event){if(!config.live)return;try{if(event==='start'&&sessionStorage.getItem(`social-inno-start-${survey.version}`))return;}catch{}
+ request('/api/visit',{eventId:crypto.randomUUID(),sessionId,event}).then(()=>{if(event==='start')try{sessionStorage.setItem(`social-inno-start-${survey.version}`,'1');}catch{}}).catch(()=>{});
 }
-const previewBanner = () => !config.live ? t('<div class="preview-banner"><span class="status-dot"></span> PREVIZUALIZARE <span>Întrebări de lucru · răspunsurile nu sunt trimise</span></div>') : '';
-function home() {
-  main.innerHTML = html`${previewBanner()}<section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="line"></span> STUDIU · IMM-URI DIN ROMÂNIA</div><h1 tabindex="-1">AI în afacerea ta.<br><span>Unde suntem.<br>Ce urmează.</span></h1><p class="hero-lead">De la primele încercări la decizii strategice.<br>Ajută-ne să înțelegem cum folosesc companiile din România inteligența artificială.</p><div class="hero-actions"><button class="primary" id="start">${Object.keys(answers).length ? t('Continuă chestionarul') : t('Începe chestionarul')} <span>↗</span></button><span class="time"><span>◷</span> Aproximativ 6–8 minute</span></div><div class="hero-facts"><span><b>${totalCount()}</b> întrebări pe parcurs</span><span><b>${Object.keys(survey.branches).length}</b> trasee adaptate</span><span>Fără nume sau email</span></div></div><div class="journey-art" aria-label="Parcurs: compania ta, etapa de adoptare AI, perspective și strategie"><div class="art-top"><span>FIECARE COMPANIE ARE<br>PROPRIUL PARCURS.</span><span class="art-asterisk">✳</span></div><div class="journey-node"><span class="node-number">01</span><div><small>PUNCTUL DE PLECARE</small><strong>Compania ta</strong></div><span>↘</span></div><div class="branch-lines"><span></span><span></span><span></span></div><div class="branch-cards"><div><span>↗</span><strong>Folosim</strong><small>AI zi de zi</small></div><div><span>◎</span><strong>Explorăm</strong><small>Idei și proiecte</small></div><div><span>✧</span><strong>Descoperim</strong><small>Primii pași</small></div></div><div class="join-line"></div><div class="journey-node final-node"><span class="node-number">03</span><div><small>PRIVIM ÎNAINTE</small><strong>Perspective & strategie</strong></div><span>↗</span></div><div class="art-bottom"><span>O EXPERIENȚĂ RELEVANTĂ PENTRU TINE</span><span>01 — 03</span></div></div></section><section class="intro-grid"><div><span class="eyebrow">DE CE ACEST STUDIU</span><h2>Experiența ta contează.<br>Indiferent de unde pornești.</h2></div><p>Folosiți deja AI, testați câteva idei sau încă vă întrebați de unde să începeți? Fiecare perspectivă ne ajută să înțelegem oportunitățile, provocările și sprijinul de care au nevoie IMM-urile.</p><div class="intro-note"><span>↳</span><p>Întrebările se adaptează la etapa companiei tale. Nu sunt necesare cunoștințe tehnice.</p></div></section><details class="privacy"><summary>Despre răspunsuri și confidențialitate</summary><p>Nu cerem numele, emailul sau denumirea companiei. Răspunsurile sunt păstrate în Google Sheets, iar accesul la rezultate este protejat. Folosim un identificator aleatoriu de sesiune pentru a număra vizitele și completările, fără a salva adresa IP în chestionar. Progresul rămâne în acest browser până la trimitere sau cel mult 7 zile. Evită să incluzi date personale în comentarii.</p>${!config.live ? t('<p><strong>Versiune de lucru:</strong> înainte de lansare vor fi completate informațiile despre organizator, contactul pentru date și perioada de păstrare.</p>') : ''}<button class="text-button" id="clear-draft">Șterge progresul din acest browser</button></details>`;
-  document.querySelector('#start').onclick = () => { page = 'question'; track('start'); save(); render(); focusTitle(); };
-  document.querySelector('#clear-draft').onclick = () => { reset(); home(); };
+const banner=()=>config.live?'':`<div class="preview-banner"><span class="status-dot"></span>${t('preview')}<span>${t('previewNote')}</span></div>`;
+function home(){
+ main.innerHTML=`${banner()}<section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="line"></span>${t('eyebrow')}</div><h1 tabindex="-1">${t('hero')}<br><span>${t('heroAccent')}</span></h1><p class="hero-lead">${t('intro')}</p><p class="hero-reassurance">${t('noRight')}</p><div class="hero-actions"><button class="primary" id="start">${Object.keys(answers).length?t('resume'):t('start')} <span>↗</span></button><span class="time">◷ ${t('time')}</span></div><div class="hero-facts"><span><b>8</b> ${t('questions')}</span><span><b>3</b> ${t('sections')}</span><span>${t('noName')}</span></div></div><div class="journey-art" aria-label="${t('journey')}"><div class="art-top"><span>${t('artTitle').replace('\n','<br>')}</span><span class="art-asterisk">✳</span></div>${survey.sections.map((s,i)=>`${i?'<div class="join-line"></div>':''}<div class="journey-node ${i===2?'final-node':''}"><span class="node-number">0${i+1}</span><div><small>${localized(s.description,language)}</small><strong>${localized(s.title,language)}</strong></div><span>↗</span></div>`).join('')}<div class="art-bottom"><span>${t('artNote')}</span><span>01 — 03</span></div></div></section><section class="intro-grid"><div><span class="eyebrow">${t('why')}</span><h2>${t('whyTitle')}</h2></div><p>${t('whyBody')}</p><div class="intro-note"><span>↳</span><p>${t('simple')}</p></div></section><details class="privacy"><summary>${t('privacy')}</summary><p>${t('privacyBody')}</p><button class="text-button" id="clear-draft">${t('clear')}</button></details>`;
+ document.querySelector('#start').onclick=()=>{page='question';track('start');save();render();focusTitle();};
+ document.querySelector('#clear-draft').onclick=()=>{reset();home();};
 }
-function branchCount() { return (survey.branches[answers.ai_adoption] || Object.values(survey.branches)[0]).questions.length; }
-function totalCount() { return survey.core.length + branchCount() + survey.closing.length; }
-function sectionFor(index) { return index < survey.core.length ? 0 : index < survey.core.length + branchCount() ? 1 : 2; }
-function shell(content, index = position) {
-  const section = sectionFor(index), branch = survey.branches[answers.ai_adoption];
-  main.innerHTML = html`${previewBanner()}<div class="survey-layout"><aside class="survey-sidebar"><div class="eyebrow">PARCURSUL TĂU</div><h2>O imagine mai clară<br>despre AI.</h2><ol class="steps">${[[t('Compania ta'),t('Contextul în care lucrați')],[t('Experiența cu AI'),branch?.title || t('Un traseu adaptat')],[t('Ce urmează'),t('Perspective și strategie')]].map(([label, sub], i) => html`<li class="${i === section ? 'current' : i < section ? 'done' : ''}" ${i === section ? 'aria-current="step"' : ''}><span>${i < section ? '✓' : html`0${i+1}`}</span><div><strong>${label}</strong><small>${esc(sub)}</small></div></li>`).join('')}</ol><div class="sidebar-note">↳<p>Progresul se păstrează în acest browser. Poți reveni la întrebările anterioare oricând.</p></div><button id="home" class="text-button">← Înapoi la prezentare</button></aside><section class="question-panel">${content}</section></div>`;
-  document.querySelector('#home').onclick = () => { page = 'home'; render(); focusTitle(); };
+function shell(content,index=position){
+ const section=survey.questions[index].section;
+ const active=survey.sections.findIndex(s=>s.id===section);
+ main.innerHTML=`${banner()}<div class="survey-layout"><aside class="survey-sidebar"><div class="eyebrow">${t('journey')}</div><h2>${t('sidebarTitle').replace('\n','<br>')}</h2><ol class="steps">${survey.sections.map((s,i)=>`<li class="${i===active?'current':i<active?'done':''}" ${i===active?'aria-current="step"':''}><span>${i<active?'✓':`0${i+1}`}</span><div><strong>${localized(s.title,language)}</strong><small>${localized(s.description,language)}</small></div></li>`).join('')}</ol><div class="sidebar-note">↳<p>${t('saved')}</p></div><button id="home" class="text-button">← ${t('home')}</button></aside><section class="question-panel">${content}</section></div>`;
+ document.querySelector('#home').onclick=()=>{page='home';render();focusTitle();};
 }
-function question() {
-  const qs = getQuestions(answers), q = qs[position];
-  if (!q) { page = 'review'; return review(); }
-  const total = totalCount();
-  shell(html`<div class="progress-head"><span>ÎNTREBAREA ${String(position+1).padStart(2,'0')} / ${total}</span><span>${Math.round(position/total*100)}%</span></div><progress max="${total}" value="${position}" aria-label="Progres"></progress>${position === survey.core.length ? html`<div class="branch-notice">↳ Traseul tău: <strong>${esc(survey.branches[answers.ai_adoption]?.title)}</strong></div>` : ''}<div class="question-heading"><span class="eyebrow">${[t('COMPANIA TA'),t('EXPERIENȚA CU AI'),t('PERSPECTIVE ȘI STRATEGIE')][sectionFor(position)]}</span><h1 tabindex="-1" id="question-title">${esc(q.label)}</h1><p>${q.type === 'multi' ? t('Poți selecta mai multe variante.') : q.type === 'text' ? t('Opțional · maximum 1.500 de caractere. Nu include date personale.') : t('Selectează o singură variantă.')}</p></div><form id="question-form"><fieldset aria-labelledby="question-title">${q.type === 'text' ? html`<textarea id="answer" name="answer" maxlength="1500" rows="6" aria-label="${esc(q.label)}" placeholder="Perspectiva ta…">${esc(answers[q.id] || '')}</textarea>` : html`<div class="options">${q.options.map((o, i) => { const checked = q.type === 'multi' ? answers[q.id]?.includes(o.value) : answers[q.id] === o.value; return html`<label class="option ${checked ? 'selected' : ''}"><input id="option-${i}" type="${q.type === 'multi' ? 'checkbox' : 'radio'}" name="answer" value="${esc(o.value)}" ${checked ? 'checked' : ''}><span>${esc(o.label)}</span><span class="option-letter">${String.fromCharCode(65+i)}</span></label>`; }).join('')}</div>`}</fieldset><p class="error" id="error" role="alert"></p><div class="question-actions"><button type="button" class="secondary" id="back">← Înapoi</button><span class="optional-label">${q.required ? t('Răspuns necesar') : t('Răspuns opțional')}</span><button class="primary" type="submit">${position === qs.length-1 ? t('Verifică răspunsurile') : t('Continuă')} →</button></div></form>`);
-  const form = document.querySelector('form');
-  form.oninput = () => {
-    const oldBranch = answers.ai_adoption;
-    answers[q.id] = q.type === 'multi' ? [...form.querySelectorAll('input:checked')].map(x => x.value) : q.type === 'text' ? form.querySelector('textarea').value : form.querySelector('input:checked')?.value;
-    if (q.id === survey.branchQuestionId && oldBranch !== answers.ai_adoption) {
-      for (const b of Object.values(survey.branches)) for (const item of b.questions) delete answers[item.id];
-    }
-    form.querySelectorAll('.option').forEach(label => label.classList.toggle('selected', label.querySelector('input').checked));
-    document.querySelector('#error').textContent = ''; save();
-  };
-  form.onsubmit = event => { event.preventDefault(); const error = answerError(q, answers[q.id]); if (error) { document.querySelector('#error').textContent = error; return; } if (position === qs.length-1) page = 'review'; else position++; save(); render(); focusTitle(); };
-  document.querySelector('#back').onclick = () => { if (position) position--; else page = 'home'; save(); render(); focusTitle(); };
+function renderFields(q){
+ const value=answers[q.id];
+ if(q.type==='text')return `<textarea id="answer" name="answer" maxlength="${q.maxLength}" rows="7" aria-label="${esc(q.label)}" aria-describedby="question-help" aria-required="true" placeholder="${t('placeholder')}">${esc(value||'')}</textarea><p class="field-hint">${t('textHint')}</p>`;
+ const values=q.type==='multi'?selectedValues(q,value):[value];
+ return `<div class="options ${q.id==='ai_tasks_last_3_months'?'compact-options':''}">${q.options.map(o=>{
+  const checked=values.includes(o.value);
+  return `<div class="field-option"><label class="option ${checked?'selected':''}"><input id="choice-${o.value}" type="${q.type==='multi'?'checkbox':'radio'}" name="answer" value="${o.value}" ${checked?'checked':''}><span class="option-copy"><span class="option-name">${esc(o.label)}</span>${o.description?`<span class="option-description">${esc(o.description)}</span>`:''}</span></label>${q.structured&&checked&&!o.exclusive?`<div class="option-details">${q.other&&o.value==='other'?`<label for="other-name">${t('other')}</label><input id="other-name" type="text" maxlength="120" value="${esc(value?.other||'')}" autocomplete="off">`:''}${q.access?`<label for="access-${o.value}">${t('access')} ${esc(o.value==='other'?o.label:o.label)}?</label><select id="access-${o.value}" data-access="${o.value}"><option value="">${t('choose')}</option>${accessTypes.map(a=>`<option value="${a.value}" ${value?.access?.[o.value]===a.value?'selected':''}>${localized(a.label,language)}</option>`).join('')}</select>`:''}</div>`:''}</div>`;
+ }).join('')}</div>`;
 }
-function review() {
-  const qs = getQuestions(answers);
-  const invalid = qs.findIndex(q => answerError(q, answers[q.id]));
-  if (invalid >= 0 || !Object.hasOwn(survey.branches, answers.ai_adoption)) { position = invalid < 0 ? 5 : invalid; page = 'question'; return question(); }
-  shell(html`<span class="eyebrow">ULTIMUL PAS</span><h1 tabindex="-1">Totul arată bine?</h1><p class="muted">Verifică răspunsurile înainte de ${config.live ? t('trimitere') : t('a încheia previzualizarea')}.</p><div class="review-list">${qs.map((q,i) => html`<div class="review-row"><div><small>${i+1}. ${esc(q.label)}</small><p>${esc(q.type === 'text' ? answers[q.id] || t('Fără comentariu') : q.options.filter(o => Array.isArray(answers[q.id]) ? answers[q.id].includes(o.value) : answers[q.id] === o.value).map(o => o.label).join(', '))}</p></div><button data-edit="${i}" class="text-button" aria-label="Modifică întrebarea ${i+1}">Modifică</button></div>`).join('')}</div>${config.live ? html`<label class="consent"><input type="checkbox" id="consent" ${consent ? 'checked' : ''}><span>Am citit informațiile despre răspunsuri și confidențialitate și sunt de acord să particip la acest studiu.</span></label>` : t('<div class="branch-notice">Aceasta este o previzualizare. Niciun răspuns nu va fi salvat în Google Sheets.</div>')}<p id="error" class="error" role="alert"></p><div class="question-actions"><button class="secondary" id="back">← Înapoi</button><button class="primary" id="submit">${config.live ? t('Trimite răspunsurile') : t('Încheie previzualizarea')} ↗</button></div>`, qs.length - 1);
-  document.querySelectorAll('[data-edit]').forEach(button => button.onclick = () => { position = Number(button.dataset.edit); page = 'question'; render(); focusTitle(); });
-  document.querySelector('#back').onclick = () => { position = qs.length-1; page = 'question'; render(); focusTitle(); };
-  if (config.live) document.querySelector('#consent').onchange = event => { consent = event.target.checked; };
-  document.querySelector('#submit').onclick = async () => {
-    if (busy) return;
-    if (config.live && !consent) { document.querySelector('#error').textContent = t('Confirmă acordul de participare înainte de trimitere.'); return; }
-    busy = true; const button = document.querySelector('#submit'); button.disabled = true;
-    try {
-      if (config.live) {
-        button.textContent = t('Se salvează…');
-        await request('/api/submit', { submissionId, sessionId, version: survey.version, answers, consent, durationSeconds: Math.min(604800, Math.max(0, Math.round((Date.now()-startedAt)/1000))) });
-        storage.remove(KEY);
-      }
-      page = 'success'; render(); focusTitle();
-    } catch (error) { document.querySelector('#error').textContent = t(error.message); button.disabled = false; button.textContent = t('Încearcă din nou ↗'); }
-    finally { busy = false; }
-  };
+function question(){
+ const q=getQuestions(answers,language)[position];
+ const optional=!requiredQuestion(q,answers);
+ shell(`<div class="progress-head"><span>${t('question')} ${position+1} / 8</span><span>${Math.round(position/8*100)}%</span></div><progress max="8" value="${position}" aria-label="${t('progress')}"></progress><div class="question-heading"><span class="eyebrow">${localized(survey.sections.find(s=>s.id===q.section).title,language)}</span><h1 tabindex="-1" id="question-title">${esc(q.label)}</h1><p id="question-help">${esc(q.helper||(q.type==='multi'?t('many'):q.type==='single'?t('one'):''))}</p></div>${optional?`<div class="branch-notice">${t('nonuser')}</div>`:''}<form id="question-form" novalidate><fieldset aria-labelledby="question-title" aria-describedby="question-help">${renderFields(q)}</fieldset><p class="error" id="error" role="alert"></p><div class="question-actions"><button type="button" class="secondary" id="back">← ${t('back')}</button><span class="optional-label">${optional?t('optional'):t('required')}</span><button class="primary" type="submit">${position===7?t('review'):t('next')} →</button></div>${optional?`<button type="button" id="skip-question" class="text-button">${t('skip')}</button>`:''}</form>`);
+ const form=document.querySelector('#question-form');
+ form.onchange=e=>{
+  if(e.target.name==='answer' && q.type!=='text'){
+   answers[q.id]=q.type==='multi'?toggleSelection(q,answers[q.id],e.target.value,e.target.checked):e.target.value;
+   save();const focus=e.target.id;question();document.getElementById(focus)?.focus({preventScroll:true});
+  }else if(e.target.dataset.access){answers[q.id].access[e.target.dataset.access]=e.target.value;save();document.querySelector('#error').textContent='';}
+ };
+ form.oninput=e=>{if(q.type==='text')answers[q.id]=e.target.value;else if(e.target.id==='other-name')answers[q.id].other=e.target.value;else return;save();document.querySelector('#error').textContent='';};
+ function next(){if(position===7)page='review';else position++;save();render();focusTitle();}
+ form.onsubmit=e=>{e.preventDefault();const error=answerError(q,answers[q.id],answers,language);if(error){document.querySelector('#error').textContent=error;return;}next();};
+ document.querySelector('#back').onclick=()=>{if(position)position--;else page='home';save();render();focusTitle();};
+ if(optional)document.querySelector('#skip-question').onclick=()=>{answers[q.id]=null;next();};
 }
-function success() {
-  main.innerHTML = html`${previewBanner()}<section class="success"><div class="success-icon">${config.live ? '✓' : '↗'}</div><span class="eyebrow">${config.live ? t('RĂSPUNS ÎNREGISTRAT') : t('PREVIZUALIZARE ÎNCHEIATĂ')}</span><h1 tabindex="-1">${config.live ? t('Mulțumim pentru perspectiva ta.') : t('Parcursul este pregătit.')}</h1><p>${config.live ? t('Răspunsurile tale au fost salvate. Ne ajuți să înțelegem mai bine cum poate AI susține companiile din România.') : t('Ai parcurs trunchiul comun, întrebările adaptate și secțiunea de strategie. Răspunsurile de test nu au fost trimise.')}</p><button class="primary" id="return">${config.live ? t('Înapoi la prezentare') : t('Explorează alt traseu')} ↗</button></section>`;
-  document.querySelector('#return').onclick = () => { reset(); page = 'home'; render(); focusTitle(); };
+function review(){
+ const qs=getQuestions(answers,language),invalid=qs.findIndex(q=>answerError(q,answers[q.id],answers,language));
+ if(invalid>=0){position=invalid;page='question';return question();}
+ shell(`<span class="eyebrow">${t('finalStep')}</span><h1 tabindex="-1">${t('reviewTitle')}</h1><p class="muted">${t('reviewIntro')}</p><div class="review-list">${qs.map((q,i)=>`<div class="review-row"><div><small>${i+1}. ${esc(q.label)}</small><p>${esc(formatAnswer(q,answers[q.id],language))}</p></div><button data-edit="${i}" class="text-button" aria-label="${t('edit')} ${i+1}">${t('edit')}</button></div>`).join('')}</div>${config.live?`<details class="privacy"><summary>${t('privacy')}</summary><p>${t('privacyBody')}</p></details><label class="consent"><input type="checkbox" id="consent" ${consent?'checked':''}><span>${t('consent')}</span></label>`:`<div class="branch-notice">${t('previewReview')}</div>`}<p id="error" class="error" role="alert"></p><div class="question-actions"><button class="secondary" id="back">← ${t('back')}</button><button class="primary" id="submit">${config.live?t('submit'):t('finishPreview')} ↗</button></div>`,7);
+ document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{position=Number(b.dataset.edit);page='question';render();focusTitle();});
+ document.querySelector('#back').onclick=()=>{position=7;page='question';render();focusTitle();};
+ if(config.live)document.querySelector('#consent').onchange=e=>{consent=e.target.checked;};
+ document.querySelector('#submit').onclick=async()=>{
+  if(busy)return;if(config.live&&!consent){document.querySelector('#error').textContent=t('consentError');return;}
+  busy=true;document.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=true);
+  try{
+   if(config.live){document.querySelector('#submit').textContent=t('saving');await request('/api/submit',{submissionId,sessionId,version:survey.version,language,answers,consent,durationSeconds:Math.min(604800,Math.max(0,Math.round((Date.now()-startedAt)/1000)))});storage.remove(KEY);}
+   page='success';render();focusTitle();
+  }catch(error){document.querySelector('#error').textContent=t(error.code==='version'?'versionError':error.code==='closed'?'closed':error.code==='validation'?'invalid':'unavailable');document.querySelector('#submit').textContent=t('retry');}
+  finally{busy=false;document.querySelectorAll('button,input,select,textarea').forEach(el=>el.disabled=false);}
+ };
 }
-function render() { updatePageLanguage(); ({ home, question, review, success })[page](); }
-function updatePageLanguage() {
-  const en = language === 'en';
-  document.documentElement.lang = language;
-  document.title = en ? 'Social Innovation Solutions · AI in Romanian SMEs' : 'Social Innovation Solutions · AI în IMM-urile din România';
-  document.querySelector('meta[name="description"]').content = en ? 'A study of how Romanian SMEs use artificial intelligence in everyday work and business strategy.' : 'Un studiu despre utilizarea inteligenței artificiale în activitatea și strategia IMM-urilor din România.';
-  document.querySelector('.skip').textContent = en ? 'Skip to content' : 'Mergi la conținut';
-  document.querySelector('.brand').setAttribute('aria-label', en ? 'Social Innovation Solutions, home' : 'Social Innovation Solutions, prima pagină');
-  document.querySelector('.brand-caption').textContent = en ? 'RAIFFEISEN · AI STUDY' : 'RAIFFEISEN · STUDIU AI';
-  document.querySelector('.edition').textContent = en ? 'PERSPECTIVES FROM ROMANIA' : 'PERSPECTIVE DIN ROMÂNIA';
-  document.querySelector('.site-footer .footer-topic').textContent = en ? 'AI & SMEs' : 'AI & IMM-uri';
-  document.querySelector('.footer-tagline').textContent = en ? 'A clearer perspective. A step forward.' : 'O perspectivă mai clară. Un pas înainte.';
-  document.querySelector('.site-footer a').textContent = en ? 'Administration ↗' : 'Administrare ↗';
-  document.querySelectorAll('[data-language]').forEach(button => { button.setAttribute('aria-pressed', String(button.dataset.language === language)); button.disabled = busy; });
+function success(){main.innerHTML=`${banner()}<section class="success"><div class="success-icon">${config.live?'✓':'↗'}</div><span class="eyebrow">${config.live?t('received'):t('previewComplete')}</span><h1 tabindex="-1">${config.live?t('savedTitle'):t('previewTitle')}</h1><p>${config.live?t('savedBody'):t('previewBody')}</p><button id="return" class="primary">${t('again')} ↗</button></section>`;document.querySelector('#return').onclick=()=>{reset();page='home';render();focusTitle();};}
+function updateLanguage(){
+ document.documentElement.lang=language;document.title=language==='en'?'AI & SMEs · Social Innovation Solutions':'AI & IMM-uri · Social Innovation Solutions';
+ document.querySelector('meta[name="description"]').content=t('intro');document.querySelector('.skip').textContent=t('skipContent');document.querySelector('.brand').setAttribute('aria-label',`Social Innovation Solutions · ${t('home')}`);document.querySelector('.brand-caption').textContent=t('caption');document.querySelector('.edition').textContent=t('perspectives');document.querySelector('.footer-topic').textContent=language==='en'?'AI & SMEs':'AI & IMM-uri';document.querySelector('.footer-tagline').textContent=t('tagline');document.querySelector('.site-footer a').textContent=`${t('admin')} ↗`;
+ document.querySelectorAll('[data-language]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.language===language));b.disabled=busy;});
 }
-document.querySelectorAll('[data-language]').forEach(button => button.onclick = () => {
-  if (busy) return;
-  language = button.dataset.language;
-  setLanguage(language); survey = translateSurvey(baseSurvey, language);
-  storage.set('social-inno-language', language);
-  render();
-});
-try { const response = await fetch('/api/config'); if (!response.ok) throw new Error(); config = await response.json(); } catch { config = { live: false }; }
-render(); track('visit');
-
+function render(){updateLanguage();({home,question,review,success})[page]();}
+for(const button of document.querySelectorAll('[data-language]'))button.onclick=()=>{if(busy)return;language=button.dataset.language;storage.set('social-inno-language',language);render();};
+try{const r=await fetch('/api/config',{signal:AbortSignal.timeout(10000)});if(r.ok)config=await r.json();}catch{}
+render();track('visit');
