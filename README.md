@@ -63,7 +63,7 @@ Metadata includes submission/session IDs, received time, questionnaire version a
 
 Destination: https://docs.google.com/spreadsheets/d/1TIoviEAiScYKCHEU5OBkuNFiinIg5sFvztJ2Yd-5FDw/edit
 
-The destination has `Responses` and `Visits` tabs with the v3 headers. Production collection still requires Google service-account credentials; a connected Codex Google account does not provide runtime credentials to the website.
+The destination has `Responses` (A:BC) and `Visits` (A:E) tabs with the headers required by v4. Production is connected through the `questionnaire-writer` service account in the `social-inno-survey` Google Cloud project, shared on the sheet as Editor; its key lives only in Vercel. A connected personal Google account does not provide runtime credentials to the website.
 
 1. Enable the Google Sheets API in your Google Cloud project and create a service account.
 2. Share the destination sheet with that service account as Editor.
@@ -71,6 +71,8 @@ The destination has `Responses` and `Visits` tabs with the v3 headers. Productio
 4. Confirm organizer/contact/retention privacy wording for the actual program, then set `SURVEY_LIVE=true` and redeploy. Version v4 already sets `survey.draft=false`.
 
 Both the live switch and configured storage are required. Missing credentials keep production in preview mode. The protected admin dashboard reports storage and collection status.
+
+Troubleshooting: if the admin dashboard shows "The admin service is temporarily unavailable" after a correct password, or respondents see "We could not save your response", the Google call failed. Find the `API failure:` line in the Vercel project logs. `Google authentication failed` or a PEM/decoder error means a malformed `GOOGLE_PRIVATE_KEY` (commonly pasted with surrounding quotes) or a wrong service-account email. A Sheets `403` means the Sheets API is disabled in the service account's project or the sheet is not shared with it. A `404` means a wrong `GOOGLE_SHEET_ID`. Redeploy after changing any variable.
 
 `api/submit.js` validates version, all visible answers, access details and consent on the server. Google writes use RAW values so participant text cannot execute as a spreadsheet formula. The success screen follows acknowledgement of persistence, and ordinary retries reuse the submission ID.
 
@@ -86,7 +88,7 @@ Sheets does not provide atomic uniqueness: simultaneous duplicate submissions ma
 
 Automated tests cover bilingual structure, all question types, non-user skipping, exclusivity, invalid payloads, version checks, structured persistence, retry deduplication, closed collection, origin checks, storage failures, Google API header mapping, legacy/future schema compatibility, analytics and admin authentication.
 
-Browser checks cover English and Romanian completion against an isolated demo store, mobile layouts, saved drafts after reload, language switching, Back/Next, consent, offline failure/retry and inspecting the resulting structured responses in the English admin interface. The actual Google Sheet headers were read back after migration. Production collection must be tested once runtime credentials are installed, before inviting participants.
+Browser checks cover English and Romanian completion against an isolated demo store, mobile layouts, saved drafts after reload, language switching, Back/Next, consent, offline failure/retry and inspecting the resulting structured responses in the English admin interface. The actual Google Sheet headers were read back after migration. Production collection was verified end to end on 2026-09-25: a live v4 submission was written to `Responses` and displayed in the admin dashboard.
 
 Recommended next iteration: pilot with 3–5 SME managers to measure completion time and clarify any ambiguous choices, then use workshop-task responses to select practical exercises.
 
