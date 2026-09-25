@@ -45,7 +45,8 @@ test('schema extensions retain older fields and tolerate future extra columns',(
 test('analytics keep frequency separate and deduplicate retry IDs',()=>{
  const record=validateSubmission(fixture()),legacy={...record,submission_id:'old',survey_version:'2026-09-draft-1'};
  const events=[{event_id:'v',session_id:record.session_id,event:'visit'},{event_id:'v',session_id:record.session_id,event:'visit'},{event_id:'s',session_id:record.session_id,event:'start'}];
- const m=summarize([record,record,legacy],events);assert.equal(m.responses,2);assert.equal(m.currentResponses,1);assert.equal(m.legacyResponses,1);assert.equal(m.frequency.daily,1);assert.equal(m.visits,1);assert.equal(m.completion,100);assert.equal(summarize([],[]).completion,null);
+ const m=summarize([record,record,legacy],events);assert.equal(m.responses,2);assert.equal(m.currentResponses,1);assert.equal(m.legacyResponses,1);assert.equal(m.frequency.daily,1);assert.equal(m.visits,1);assert.equal(m.completion,100);assert.equal(m.completedStarts,1);assert.equal(m.untracked,0);assert.equal(summarize([],[]).completion,null);
+ const early={...record,submission_id:'early',session_id:'no-start'};const n=summarize([early],[]);assert.equal(n.completion,null);assert.equal(n.untracked,1);assert.equal(n.responses,1);
 });
 
 test('participant identity is required, bounded, trimmed and stored separately',()=>{
