@@ -46,6 +46,7 @@ export function mountCarousel(target, slides, {label='Survey answers'}={}) {
   function paginate(){
     if(disposed||!shell.isConnected)return;
     const slide=prepared[questionIndex];
+    shell.dataset.question=slide.id;
     heading.replaceChildren(slide.header.cloneNode(true));
     shell.classList.toggle('carousel-quotes',slide.quotes);
     shell.classList.remove('carousel-tight');

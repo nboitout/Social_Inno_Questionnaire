@@ -54,7 +54,7 @@ function dashboard(){
   data_to_decisions_interest:()=>bars('data_to_decisions_interest','Theme usefulness','One answer · “AI for Business: From Data to Decisions”',tally(rows,'data_to_decisions_interest'),n),
   workshop_preferred_topic:()=>quotes('workshop_preferred_topic','Preferred other topics','Asked when the participant preferred another AI topic',rows),
   workshop_dataset_readiness:()=>bars('workshop_dataset_readiness','Can bring a real dataset','One answer',tally(rows,'workshop_dataset_readiness'),n),
-  workshop_dataset_type:()=>bars('workshop_dataset_type','Kinds of data they could bring',`Optional follow-up, asked when readiness is Yes, Probably or Maybe · ${datasetAsked.length} asked · shares are of those asked · several answers possible`,tally(datasetAsked,'workshop_dataset_type').map(i=>i.label==='Other'?{...i,detail:datasetAsked.map(r=>answersFor(r).workshop_dataset_type?.other).filter(Boolean).join(', ')}:i),datasetAsked.length),
+  workshop_dataset_type:()=>bars('workshop_dataset_type','What kind of data could you bring?',`Optional · ${datasetAsked.length} asked · Multiple answers · % of those asked`,tally(datasetAsked,'workshop_dataset_type').map(i=>i.label==='Other'?{...i,detail:[...new Set(datasetAsked.map(r=>answersFor(r).workshop_dataset_type?.other).filter(Boolean))].join(', ')}:i),datasetAsked.length),
   business_data_question:()=>quotes('business_data_question','Business questions to explore with AI','With each participant’s dataset readiness',rows,readiness,true),
   workshop_other_expectation:()=>quotes('workshop_other_expectation','Other expectations','Optional',rows,null,true)
  };
