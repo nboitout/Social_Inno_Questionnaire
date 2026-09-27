@@ -1,7 +1,9 @@
 import { route, method, sameOrigin, body, uuid, HttpError } from '../lib/http.js';
 import { live, appendRow } from '../lib/store.js';
+import { activityPreference } from '../lib/activity.js';
 export default route(async (req, res) => {
   method(req, 'POST'); sameOrigin(req);
+  if (activityPreference(req) === true) return res.json({ recorded: false, excluded: true });
   if (!live()) return res.json({ recorded: false });
   const data = body(req);
   if (!uuid(data.eventId) || !uuid(data.sessionId) || !['visit','start'].includes(data.event)) throw new HttpError(400, 'Invalid event');

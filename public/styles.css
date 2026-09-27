@@ -255,3 +255,14 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--olive),#
 /* Admin insights: question summaries and open-answer lists. */
 .section-title{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:40px 0 4px}.section-title h2{font-size:24px}.section-title .field-hint{margin:0}.chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px;margin:18px 0}.chart-grid .admin-card{min-width:0}.chart-grid .wide{grid-column:1/-1}.question-number{display:inline-block;vertical-align:middle;font-size:11px;letter-spacing:.5px;font-weight:700;background:var(--yellow);color:var(--ink);border-radius:4px;padding:3px 7px;margin-right:4px}.admin-card .question-text{font-size:13px;line-height:1.5;margin:-8px 0 4px}.chart-grid .admin-card h2{margin-bottom:14px}.summary-scope{margin:32px 0 0}.distribution-label{gap:12px}.distribution-label strong{white-space:nowrap}.share{display:inline-block;min-width:44px;text-align:right;font-weight:400;color:var(--muted);margin-left:8px}.distribution-detail{display:block;font-size:11px;color:var(--muted);margin-top:-4px;overflow-wrap:anywhere}.quote-list{list-style:none;margin:8px 0 0;padding:0;max-height:560px;overflow-y:auto}.quote-list li{border-top:1px solid var(--border);padding:12px 0}.quote-list p{font-size:14px;overflow-wrap:anywhere}.quote-list small{display:block;font-size:11px;color:var(--muted);margin-top:4px}.wrap-cell{white-space:normal;min-width:130px;max-width:220px}.recent-activity{margin-top:24px}
 @media(max-width:760px){.chart-grid{grid-template-columns:1fr}.section-title{margin-top:30px}}
+
+/* Full activity history and the persistent browser exclusion preference. */
+.dashboard-grid>.admin-card{min-width:0}
+.activity-preference{background:var(--sage);border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px}
+.activity-preference button{margin:10px 0}
+.activity-controls,.activity-pagination{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0;font-size:12px}
+.activity-table{max-height:440px;overflow:auto}
+.activity-table th{position:sticky;top:0;background:white}
+.activity-session{white-space:normal;overflow-wrap:anywhere;min-width:120px}
+.activity-pagination{justify-content:space-between;margin-bottom:0}
+.activity-pagination button:disabled{cursor:default}
