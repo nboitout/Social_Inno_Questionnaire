@@ -1,8 +1,8 @@
 # AI & SMEs Questionnaire — English
 
-Social Innovation Solutions · Raiffeisen
+Business Forward
 
-**Workshop diagnostic · 24 September 2026**
+**Workshop diagnostic · 24 September 2026 · revised 28 September 2026 (v5)**
 
 > This questionnaire is designed to help tailor the upcoming AI workshop and mentoring sessions to participants' current AI usage, business context, and priorities.
 
@@ -149,6 +149,25 @@ Select all that apply, then indicate how you access each tool.
 - We have AI-powered workflows or automations in production
 - AI is embedded in our products, services or core operations
 
+### Q7. What concerns, if any, do you have about using AI in your company?
+
+<!-- question-id: ai_concerns -->
+
+**Response format:** Select all that apply. Required.
+
+- Security — data leaks, cyberattacks or unauthorised access
+- Confidentiality — sharing sensitive business information with AI providers
+- Privacy and GDPR — personal data of customers or employees
+- Accuracy — wrong or made-up answers (“hallucinations”)
+- Over-reliance — people trusting AI output without checking it
+- Legal uncertainty — liability, copyright or the EU AI Act
+- Costs or unclear return on investment
+- Dependence on AI providers — pricing, service changes or lock-in
+- Lack of skills or know-how in the team
+- Impact on employees — resistance, job worries or loss of expertise
+- Something else (describe, up to 120 characters)
+- No particular concerns (cannot be combined with other choices)
+
 ---
 
 ## Section 4 — Shaping the workshop
@@ -161,7 +180,7 @@ Select all that apply, then indicate how you access each tool.
 
 The practical session would show how AI can help you explore real business data, identify patterns and drivers, create useful analyses and visualisations, and support better business decisions.
 
-### Q7. How useful would this workshop theme be for you and your company?
+### Q8. How useful would this workshop theme be for you and your company?
 
 <!-- question-id: data_to_decisions_interest -->
 
@@ -179,7 +198,7 @@ The practical session would show how AI can help you explore real business data,
 
 ____________________________________________________________
 
-### Q8. Could you bring a real business dataset to use during the workshop?
+### Q9. Could you bring a real business dataset to use during the workshop?
 
 <!-- question-id: workshop_dataset_readiness -->
 
@@ -217,7 +236,7 @@ ____________________________________________________________
 
 > For the workshop, participants should use an appropriately sanitized or anonymized dataset. Do not include passwords, credentials, unnecessary personal data, or confidential information that should not be shared with the AI environment used during the session.
 
-### Q9. If you could ask one important question about your business and have AI analyse your data to help answer it, what would you ask?
+### Q10. If you could ask one important question about your business and have AI analyse your data to help answer it, what would you ask?
 
 <!-- question-id: business_data_question -->
 
@@ -239,7 +258,7 @@ ____________________________________________________________
 
 ____________________________________________________________
 
-### Q10. Is there anything else you would particularly like us to cover during the AI workshop?
+### Q11. Is there anything else you would particularly like us to cover during the AI workshop?
 
 <!-- question-id: workshop_other_expectation -->
 
@@ -282,3 +301,7 @@ The new questions explicitly assess:
 3. what type of data they can bring;
 4. what real business question they would like AI to help answer;
 5. whether they have other workshop priorities.
+
+### Revision of 28 September 2026 (v5)
+
+Adds Q7 on concerns about using AI in the company (multi-select, with a described “Something else” and an exclusive “No particular concerns”). The former Q7–Q10 become Q8–Q11 and their follow-ups 8a and 9a; their wording and answer IDs are unchanged.

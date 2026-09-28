@@ -1,21 +1,8 @@
-# Social Innovation Solutions logo
+# Business Forward program logo
 
-Original white PNG obtained from https://socialinnovationsolutions.org/ on 2026-09-24.
+`business-forward-logo.png` was supplied by the project owner on 2026-09-28 (transparent PNG, black lettering with yellow chevrons). It was resized from 2000 × 841 to 720 × 303 for the header, without other changes, and is shown on the light page background. The asset remains the property of its owner.
 
-Original asset: https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6995aceb5d440086e835dc27/331ff3ba8_SIS-_-logo-_-white.png
-
-Used unmodified on a dark background at the project owner's request. The asset remains the property of its owner.
-
-# Business Forward sponsor logos
-
-The Raiffeisen Bank and Orange Business PNG logos were obtained from the official
-Business Forward website on 2026-09-24 and are served locally so the sponsor strip
-does not depend on third-party image loading.
-
-- Raiffeisen Bank: https://media.base44.com/images/public/699c4d86fae71d91d98ed8ba/1b2fd18d1_RB-Logo-Bank-St-Squared-Col-Neg-RGB2.png
-- Orange Business: https://media.base44.com/images/public/699c4d86fae71d91d98ed8ba/9056db578_Orange_Business_RGB_Small_Logo_White_Text.png
-
-The assets remain the property of their respective owners.
+The earlier Social Innovation Solutions, Raiffeisen Bank and Orange Business logos were removed from the site at the owner's request.
 
 # Favicon
 

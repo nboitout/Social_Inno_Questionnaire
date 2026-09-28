@@ -36,3 +36,27 @@ test('Google Sheets adapter writes RAW structured columns, reads them back and t
  try{const payload=fixture('ro');let res=response();await submit(req(payload),res);assert.equal(res.data.ok,true);res=response();await submit(req(payload),res);assert.equal(appendCount,1);const [saved]=await readRows('Responses');assert.deepEqual(JSON.parse(saved.answers_json),payload.answers);assert.equal(saved.response_language,'ro');assert.equal(saved.first_name,payload.participant.first_name);assert.equal(saved.family_name,payload.participant.family_name);assert.equal(saved.company_name,payload.participant.company_name);assert.equal(saved.future_question,'');}
  finally{global.fetch=oldFetch;delete process.env.SURVEY_LIVE;delete process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;delete process.env.GOOGLE_PRIVATE_KEY;}
 });
+
+test('Google Sheets adapter appends a missing current column to the right of the existing headers before writing',async()=>{
+ const oldFetch=global.fetch;const {privateKey}=generateKeyPairSync('rsa',{modulusLength:2048});
+ process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL='test@example.invalid';process.env.GOOGLE_PRIVATE_KEY=privateKey.export({type:'pkcs8',format:'pem'});process.env.SURVEY_LIVE='true';
+ // The live v4 sheet: every column except ai_concerns.
+ let headers=responseHeaders.filter(h=>h!=='ai_concerns');const puts=[],rows=[];
+ global.fetch=async(url,options)=>{
+  const u=decodeURIComponent(url);
+  if(url==='https://oauth2.googleapis.com/token')return Response.json({access_token:'test-token',expires_in:3600});
+  if(options?.method==='PUT'){puts.push({range:u.split('/values/')[1].split('?')[0],values:JSON.parse(options.body).values});headers=[...headers,...JSON.parse(options.body).values[0]];return Response.json({});}
+  if(url.includes(':append?')){rows.push(...JSON.parse(options.body).values);return Response.json({updates:{updatedRows:1}});}
+  if(u.includes('Responses!1:1'))return Response.json({values:[headers]});
+  if(u.includes('Responses!A2:'))return Response.json({values:rows});
+  throw new Error('Unexpected request');
+ };
+ try{
+  const payload=fixture();payload.answers.ai_concerns={selected:['security','accuracy']};const res=response();await submit(req(payload),res);assert.equal(res.data.ok,true);
+  assert.equal(puts.length,1);assert.equal(puts[0].range,'Responses!BD1:BD1');assert.deepEqual(puts[0].values,[['ai_concerns']]);
+  assert.equal(rows[0].length,headers.length);assert.deepEqual(JSON.parse(rows[0][headers.indexOf('ai_concerns')]),payload.answers.ai_concerns);
+  assert.equal(rows[0][headers.indexOf('first_name')],payload.participant.first_name);
+  const again=response();const second=fixture();await submit(req(second),again);assert.equal(again.data.ok,true);assert.equal(puts.length,1);
+ }
+ finally{global.fetch=oldFetch;delete process.env.SURVEY_LIVE;delete process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;delete process.env.GOOGLE_PRIVATE_KEY;}
+});

@@ -1,4 +1,5 @@
 import { mountCarousel } from './admin-carousel.js';
+import { survey as v4, getQuestions as v4Questions, formatAnswer as formatV4 } from './survey-v4.js';
 import { survey as v3, getQuestions as v3Questions, formatAnswer as formatV3 } from './survey-v3.js';
 import { survey as v2, getQuestions as v2Questions, formatAnswer as formatV2 } from './survey-v2.js';
 import { survey as v1, getQuestions as v1Questions, formatAnswer as formatV1 } from './survey-v1.js';
@@ -16,7 +17,9 @@ const plural=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
 const duration=value=>{const s=Number(value);if(!Number.isFinite(s)||value==='')return '—';const m=Math.floor(s/60);return m?`${m} min ${s%60} s`:`${s} s`;};
 const lines=value=>esc(value).replaceAll('\n','<br>');
 let data,filter='',search='',activityPage=0,activityPageSize=10,summaryCarousel,responseCarousel;
-const current=r=>r.survey_version===survey.version;
+// v5 only added ai_concerns, so v4 responses share every other question ID and are summarised with v5.
+const current=r=>r.survey_version===survey.version||r.survey_version===v4.version;
+const latest=r=>r.survey_version===survey.version;
 const name=r=>[r.first_name,r.family_name].filter(Boolean).join(' ')||'Not provided';
 function answersFor(r){let answers={};try{const parsed=JSON.parse(r.answers_json);if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))answers=parsed;}catch{}
  if(current(r))for(const q of questions){if(answers[q.id]===undefined){try{answers[q.id]=q.type==='multi'?JSON.parse(r[q.id]):r[q.id];}catch{answers[q.id]=null;}}}return answers;
@@ -43,6 +46,7 @@ function quotes(id,title,note,rows,context,wide=false){const items=rows.filter(r
 function dashboard(){
  summaryCarousel?.();responseCarousel?.();
  const m=data.metrics,rows=data.responses.filter(current),n=rows.length,en=rows.filter(r=>r.response_language!=='ro').length;
+ const concernsAsked=rows.filter(latest);
  const workingSkipped=rows.filter(r=>!answersFor(r).ai_working_mode).length,datasetAsked=rows.filter(r=>question('workshop_dataset_type').condition.values.includes(answersFor(r).workshop_dataset_readiness));
  const cards={
   ai_tools:()=>bars('ai_tools','AI tools used personally','Several answers possible · access type shown per tool',toolItems(rows),n),
@@ -51,6 +55,7 @@ function dashboard(){
   ai_working_mode:()=>bars('ai_working_mode','Working mode with AI','One answer · optional for participants who do not use AI',tally(rows,'ai_working_mode',[{label:'Skipped · does not use AI',count:workingSkipped}]),n),
   ai_tasks_last_3_months:()=>bars('ai_tasks_last_3_months','Tasks given to AI in the last 3 months','Several answers possible',tally(rows,'ai_tasks_last_3_months'),n),
   company_ai_adoption:()=>bars('company_ai_adoption','AI in the company','Several answers possible',tally(rows,'company_ai_adoption'),n),
+  ai_concerns:()=>bars('ai_concerns','Concerns about AI in the company',`Several answers possible · added in ${survey.version.split('-').pop()} · ${plural(concernsAsked.length,'respondent')} asked · % of those asked`,tally(concernsAsked,'ai_concerns').map(i=>i.label==='Something else'?{...i,detail:concernsAsked.map(r=>answersFor(r).ai_concerns?.other).filter(Boolean).join(' · ')}:i),concernsAsked.length),
   data_to_decisions_interest:()=>bars('data_to_decisions_interest','Theme usefulness','One answer · “AI for Business: From Data to Decisions”',tally(rows,'data_to_decisions_interest'),n),
   workshop_preferred_topic:()=>quotes('workshop_preferred_topic','Preferred other topics','Asked when the participant preferred another AI topic',rows),
   workshop_dataset_readiness:()=>bars('workshop_dataset_readiness','Can bring a real dataset','One answer',tally(rows,'workshop_dataset_readiness'),n),
@@ -90,13 +95,14 @@ function activityTable(){
 function searchable(r){const answers=answersFor(r);return [name(r),r.company_name,r.submission_id,r.survey_version,r.submitted_at,...(current(r)?getQuestions(answers,'en').map(q=>formatAnswer(q,answers[q.id],'en')):Object.values(answers).map(v=>typeof v==='object'?JSON.stringify(v):v))].join(' ').toLowerCase();}
 function matches(r){if(!filter)return true;if(filter==='legacy')return !current(r);const [id,value]=filter.split(':');if(id==='language')return (r.response_language||'en')===value;if(!current(r))return id==='company_ai_adoption'&&r.company_ai_adoption===value;return selected(r,id).includes(value);}
 function filtered(){return data.responses.filter(r=>matches(r)&&(!search||searchable(r).includes(search)));}
-function table(){const rows=filtered();document.querySelector('#result-count').textContent=`Showing ${rows.length} of ${plural(data.responses.length,'response')}`;document.querySelector('#response-table').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Participant / company</th><th>Received at</th><th>Q1 Tools / access</th><th>Q2 Usage · Q4 mode</th><th>Q6 AI in the company</th><th>Q7 Theme · Q8 dataset</th><th>Q9 Business question</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(name(r))}<div class="version-label">${esc(r.company_name||'—')}</div></td><td>${esc(date(r.submitted_at))}<div class="version-label">${esc(current(r)?'Current':r.survey_version)} · ${esc((r.response_language||'—').toUpperCase())}</div></td><td class="wrap-cell">${lines(shown(r,'ai_tools'))}</td><td class="wrap-cell">${esc(shown(r,'ai_usage_frequency'))}<div class="version-label">${esc(current(r)&&answersFor(r).ai_working_mode?shown(r,'ai_working_mode'):'')}</div></td><td class="wrap-cell">${lines(shown(r,'company_ai_adoption'))}</td><td class="wrap-cell">${esc(current(r)?shown(r,'data_to_decisions_interest').split(' —')[0]:'—')}<div class="version-label">${esc(current(r)?`Dataset: ${shown(r,'workshop_dataset_readiness').split(' —')[0]}`:'')}</div></td><td class="response-opportunity">${esc(r.business_data_question||r.tedious_task||'—')}</td><td><button class="text-button" data-id="${esc(r.submission_id)}">View response →</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">No responses to display. Responses appear after a confirmed submission.</p>';document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>detail(b.dataset.id));}
+function table(){const rows=filtered();document.querySelector('#result-count').textContent=`Showing ${rows.length} of ${plural(data.responses.length,'response')}`;document.querySelector('#response-table').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Participant / company</th><th>Received at</th><th>Q${question('ai_tools').number} Tools / access</th><th>Q${question('ai_usage_frequency').number} Usage · Q${question('ai_working_mode').number} mode</th><th>Q${question('company_ai_adoption').number} AI in the company</th><th>Q${question('data_to_decisions_interest').number} Theme · Q${question('workshop_dataset_readiness').number} dataset</th><th>Q${question('business_data_question').number} Business question</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(name(r))}<div class="version-label">${esc(r.company_name||'—')}</div></td><td>${esc(date(r.submitted_at))}<div class="version-label">${esc(latest(r)?'Current':current(r)?'v4 (no Q7)':r.survey_version)} · ${esc((r.response_language||'—').toUpperCase())}</div></td><td class="wrap-cell">${lines(shown(r,'ai_tools'))}</td><td class="wrap-cell">${esc(shown(r,'ai_usage_frequency'))}<div class="version-label">${esc(current(r)&&answersFor(r).ai_working_mode?shown(r,'ai_working_mode'):'')}</div></td><td class="wrap-cell">${lines(shown(r,'company_ai_adoption'))}</td><td class="wrap-cell">${esc(current(r)?shown(r,'data_to_decisions_interest').split(' —')[0]:'—')}<div class="version-label">${esc(current(r)?`Dataset: ${shown(r,'workshop_dataset_readiness').split(' —')[0]}`:'')}</div></td><td class="response-opportunity">${esc(r.business_data_question||r.tedious_task||'—')}</td><td><button class="text-button" data-id="${esc(r.submission_id)}">View response →</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">No responses to display. Responses appear after a confirmed submission.</p>';document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>detail(b.dataset.id));}
 function detail(id){
  const r=data.responses.find(row=>row.submission_id===id);if(!r)return;
  responseCarousel?.();
  const answers=answersFor(r),target=document.querySelector('#detail');target.classList.remove('hidden');
  let rows;
- if(current(r))rows=getQuestions(answers,'en').map(q=>[`${q.number?`Q${q.number}`:''} ${q.label}`.trim(),formatAnswer(q,answers[q.id],'en')]);
+ if(latest(r))rows=getQuestions(answers,'en').map(q=>[`${q.number?`Q${q.number}`:''} ${q.label}`.trim(),formatAnswer(q,answers[q.id],'en')]);
+ else if(r.survey_version===v4.version)rows=v4Questions(answers,'en').map(q=>[`${q.number?`Q${q.number}`:''} ${q.label}`.trim(),formatV4(q,answers[q.id],'en')]);
  else if(r.survey_version===v3.version)rows=v3Questions(answers,'en').map(q=>[q.label,formatV3(q,answers[q.id],'en')]);
  else if(r.survey_version===v2.version)rows=v2Questions(answers,'en').map(q=>[q.label,formatV2(q,answers[q.id],'en')]);
  else if(r.survey_version===v1.version)rows=v1Questions({},'en').map(q=>[q.label,formatV1(q,answers[q.id],'en')]);

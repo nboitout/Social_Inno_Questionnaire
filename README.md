@@ -1,6 +1,6 @@
 # Social Inno · Raiffeisen AI & SMEs questionnaire
 
-Participant identification form followed by a ten-question workshop preparation survey for Romanian SME founders and managers. English is the default; all respondent copy is also available in Romanian. The English-only `/admin` dashboard shows visits, responses, individual answers and CSV export. No maturity score is calculated or displayed.
+Participant identification form followed by an eleven-question workshop preparation survey for Romanian SME founders and managers. English is the default; all respondent copy is also available in Romanian. The English-only `/admin` dashboard shows visits, responses, individual answers and CSV export. No maturity score is calculated or displayed.
 
 Production: https://social-inno-questionnaire.vercel.app/
 Repository: https://github.com/nboitout/Social_Inno_Questionnaire (`main`; Vercel deploys pushes automatically).
@@ -19,18 +19,18 @@ Open http://localhost:3000 or http://localhost:3000/admin. `ADMIN_PASSWORD` acce
 
 For isolated local submission testing, set `DATA_MODE=demo` and `SURVEY_LIVE=true` in the process environment. Demo records are in memory and disappear when the server stops. Demo mode is prohibited on Vercel/production. With `SURVEY_LIVE=false`, respondents can preview the complete flow but no visits or answers are recorded.
 
-## Questionnaire v4 — Data to Decisions
+## Questionnaire v5 — Data to Decisions
 
-Version `2026-09-data-decisions-v4` has four sections, ten main questions and up to two conditional follow-ups:
+Version `2026-09-data-decisions-v5` has four sections, eleven main questions and up to two conditional follow-ups:
 
 1. Your AI today: tools/access, personal usage frequency, file/data access.
 2. How you work with AI: working mode and activities during the last three months.
-3. AI in your company: company adoption.
+3. AI in your company: company adoption and concerns about using AI (v5).
 4. Shaping the workshop: theme usefulness, dataset readiness/type, a business-data question and other expectations.
 
-`public/survey-config.js` defines stable option IDs, bilingual question copy, validation, exclusive selections and answer formatting. `public/i18n.js` contains interface copy. `public/app.js` uses shared rendering for single choice, multiple choice, conditional details and text fields. The existing logo, typography, colours and layout are preserved.
+`public/survey-config.js` defines stable option IDs, bilingual question copy, validation, exclusive selections and answer formatting. `public/i18n.js` contains interface copy. `public/app.js` uses shared rendering for single choice, multiple choice, conditional details and text fields. The header shows the Business Forward program logo; typography, colours and layout are otherwise preserved.
 
-Requiredness: Q1–Q9 are required except Q4 when Q1 or Q2 indicates no AI use. Q10 and the dataset-type follow-up are optional. Those participants see Q4 with an explicit skip option; skipped working mode is stored as null, without forcing a misleading answer or adding an extra main question. Q7a and Q9 accept 1–3,000 characters; Q10 is optional (up to 3,000). Dataset type is an optional follow-up to Yes/Probably/Maybe, with an Other name required when selected; Other names accept up to 120. Every selected Q1 tool, including Other, requires an access type. No cross-question consistency judgments are shown. The advertised 5–7 minutes is a target to validate with real participants, not a measured completion benchmark.
+Requiredness: Q1–Q10 are required except Q4 when Q1 or Q2 indicates no AI use. Q11 and the dataset-type follow-up (9a) are optional. Those participants see Q4 with an explicit skip option; skipped working mode is stored as null, without forcing a misleading answer or adding an extra main question. Q8a and Q10 accept 1–3,000 characters; Q11 is optional (up to 3,000). Q7 (AI concerns) is multi-select with an exclusive “No particular concerns” and a “Something else” description of up to 120 characters. Dataset type is an optional follow-up to Yes/Probably/Maybe, with an Other name required when selected; Other names accept up to 120. Every selected Q1 tool, including Other, requires an access type. No cross-question consistency judgments are shown. The advertised 5–7 minutes is a target to validate with real participants, not a measured completion benchmark.
 
 Back/Next and language switching preserve answers. Participant details are included in review and can be edited before submission. Versioned browser drafts include identity details, expire after seven days and are removed after confirmed live submission. Authored text is translated; participant free text is never translated. Review and consent precede a live submission; a failed request retains the draft and offers retry.
 
@@ -53,9 +53,9 @@ Each response has its own named columns:
 
 Metadata includes submission/session IDs, received time, questionnaire version and duration. Consent is validated before any response is accepted. `answers_json` is an additional structured snapshot; it does not replace the separate answer columns. Frequency, working mode and company adoption remain separate dimensions.
 
-`lib/store.js` maps writes against the actual header row. Current writes require current columns, while older response sheets remain readable and extra future columns are tolerated. The existing 36 columns were preserved and the nine new columns appended at `Responses!AK:AS`. The participant identity columns were subsequently appended at `Responses!AT:AV`. Six v2 columns were added at `Responses!AW:BB`. The v3 file/data access answer is appended at `Responses!BC` (`ai_data_access`); v2 is archived in `public/survey-v2.js` for historical admin display. No participant rows were changed. Visits retain their existing schema.
+`lib/store.js` maps writes against the actual header row. Current writes require current columns, while older response sheets remain readable and extra future columns are tolerated. The existing 36 columns were preserved and the nine new columns appended at `Responses!AK:AS`. The participant identity columns were subsequently appended at `Responses!AT:AV`. Six v2 columns were added at `Responses!AW:BB`. The v3 file/data access answer is appended at `Responses!BC` (`ai_data_access`); v2 is archived in `public/survey-v2.js` for historical admin display. The v5 concerns answer is `ai_concerns` at `Responses!BD`: when a write finds a current-version column missing, `lib/store.js` appends it to the right of the existing header row (never moving existing columns) before writing, so a new version needs no manual sheet change. No participant rows were changed. Visits retain their existing schema.
 
-`public/survey-v3.js` archives the previous Q1, Q4 and single-choice Q6 for historical records. Existing Sheets columns are reused with versioned answer shapes.
+`public/survey-v4.js` archives v4 (identical to v5 without `ai_concerns`); v4 responses are summarised with v5 in the admin, and the concerns summary counts only v5 respondents. `public/survey-v3.js` archives the previous Q1, Q4 and single-choice Q6 for historical records. Existing Sheets columns are reused with versioned answer shapes.
 
 `public/survey-v1.js` archives the eight-question version. `public/survey-legacy.js` and `public/survey-legacy-en.js` archive the previous questionnaire for historical admin labels. Unknown versions fall back to original IDs/values. When making a later version, preserve the old configuration, keep unchanged IDs stable, append needed columns, and increment `survey.version`. Do not reinterpret old records under new questions.
 
@@ -63,12 +63,12 @@ Metadata includes submission/session IDs, received time, questionnaire version a
 
 Destination: https://docs.google.com/spreadsheets/d/1TIoviEAiScYKCHEU5OBkuNFiinIg5sFvztJ2Yd-5FDw/edit
 
-The destination has `Responses` (A:BC) and `Visits` (A:E) tabs with the headers required by v4. Production is connected through the `questionnaire-writer` service account in the `social-inno-survey` Google Cloud project, shared on the sheet as Editor; its key lives only in Vercel. A connected personal Google account does not provide runtime credentials to the website.
+The destination has `Responses` (A:BC) and `Visits` (A:E) tabs; `ai_concerns` (BD) is added automatically by the first v5 submission. Production is connected through the `questionnaire-writer` service account in the `social-inno-survey` Google Cloud project, shared on the sheet as Editor; its key lives only in Vercel. A connected personal Google account does not provide runtime credentials to the website.
 
 1. Enable the Google Sheets API in your Google Cloud project and create a service account.
 2. Share the destination sheet with that service account as Editor.
 3. Add `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` and `GOOGLE_SHEET_ID` to the Vercel Production environment. The private key accepts PEM newlines or literal `\n` separators. Keep all credentials server-side.
-4. Confirm organizer/contact/retention privacy wording for the actual program, then set `SURVEY_LIVE=true` and redeploy. Version v4 already sets `survey.draft=false`.
+4. Confirm organizer/contact/retention privacy wording for the actual program, then set `SURVEY_LIVE=true` and redeploy. Version v5 already sets `survey.draft=false`.
 
 Both the live switch and configured storage are required. Missing credentials keep production in preview mode. The protected admin dashboard reports storage and collection status.
 
@@ -102,4 +102,4 @@ Recommended next iteration: pilot with 3–5 SME managers to measure completion 
 
 Vercel framework: Other; Node 24; build `npm run build`; output `dist`. Root `api/*.js` files are server functions. `/admin` rewrites to the admin page. Only `public/` is copied into deployment assets. `.env.local`, generated output and the local `template-reference/` archive are excluded from Git.
 
-The official Social Innovation Solutions logo is served from `public/assets/sis-logo-white.png`, preserving its proportions on a dark backdrop. Its source is documented beside the asset.
+The Business Forward program logo is served from `public/assets/business-forward-logo.png` on the light header, preserving its proportions. The former Social Innovation Solutions logo and the sponsor strip (Raiffeisen Bank, Orange Business) were removed at the owner's request. Sources are documented in `public/assets/README.md`.

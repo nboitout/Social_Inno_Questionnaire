@@ -3,7 +3,7 @@ const option = (value, en, ro, extra = {}) => ({ value, label: l(en, ro), ...ext
 const question = (id, section, type, en, ro, options, extra = {}) => ({ id, section, type, label: l(en, ro), required: true, ...(options ? { options } : {}), ...extra });
 export const accessTypes = [option('free','Free','Gratuit'),option('paid_personally','Paid personally','Plătit de mine'),option('provided_by_company','Provided by my company','Oferit de compania mea')];
 export const survey = {
-  version: '2026-09-data-decisions-v5', draft: false,
+  version: '2026-09-data-decisions-v4', draft: false,
   sections: [
     { id: 'today', title: l('Your AI today','AI în activitatea ta de azi'), description: l('Tools, access and habits','Instrumente, acces și obiceiuri') },
     { id: 'working', title: l('How you work with AI','Cum lucrezi cu AI'), description: l('Your everyday experience','Experiența ta de zi cu zi') },
@@ -34,24 +34,10 @@ export const survey = {
     ],{optionalForNonUsers:true}),
     question('ai_tasks_last_3_months','working','multi','What have you personally asked AI to do during the last 3 months?','Ce i-ai cerut tu AI-ului să facă în ultimele 3 luni?',[
       option('questions_search','Ask questions or search for information','Să răspundă la întrebări sau să caute informații'),option('write_rewrite','Write or rewrite text','Să scrie sau să reformuleze texte'),option('translate','Translate content','Să traducă conținut'),option('analyse_documents','Analyse a PDF or document','Să analizeze un PDF sau un document'),option('analyse_data','Analyse a spreadsheet or business data','Să analizeze un spreadsheet sau date de business'),option('presentations','Create a presentation','Să creeze o prezentare'),option('edit_files','Create or modify files directly','Să creeze sau să modifice direct fișiere'),option('email_calendar','Work with my email or calendar','Să lucreze cu emailul sau calendarul meu'),option('multi_step','Execute a multi-step task','Să execute o sarcină în mai mulți pași'),option('recurring_automation','Automate a recurring workflow','Să automatizeze un flux de lucru recurent'),option('build_app_agent','Build an AI application or agent','Să construiască o aplicație sau un agent AI'),option('none','None of these','Niciuna dintre acestea',{exclusive:true})
-    ],{compact:true}),
+    ]),
     question('company_ai_adoption','company','multi','How is AI currently used in your company?','Cum este folosit AI în prezent în compania ta?',[
       option('not_used','AI is not currently used','AI nu este folosit în prezent',{exclusive:true}),option('individual_experiments','Individuals experiment with AI independently','Unele persoane experimentează cu AI din proprie inițiativă'),option('regular_employee_use','Several employees regularly use AI tools','Mai mulți angajați folosesc regulat instrumente AI'),option('systematic_teams','AI is systematically used in some teams or business processes','AI este folosit sistematic în anumite echipe sau procese de business'),option('production_workflows','We have AI-powered workflows or automations in production','Avem în producție fluxuri de lucru sau automatizări bazate pe AI'),option('embedded_core','AI is embedded in our products, services or core operations','AI este integrat în produsele, serviciile sau operațiunile noastre de bază')
     ]),
-    question('ai_concerns','company','multi','What concerns, if any, do you have about using AI in your company?','Ce îngrijorări ai, dacă există, legate de folosirea AI în compania ta?',[
-      option('security','Security — data leaks, cyberattacks or unauthorised access','Securitate — scurgeri de date, atacuri cibernetice sau acces neautorizat'),
-      option('confidentiality','Confidentiality — sharing sensitive business information with AI providers','Confidențialitate — partajarea informațiilor sensibile de business cu furnizorii de AI'),
-      option('privacy','Privacy and GDPR — personal data of customers or employees','Protecția datelor și GDPR — datele personale ale clienților sau ale angajaților'),
-      option('accuracy','Accuracy — wrong or made-up answers (“hallucinations”)','Acuratețe — răspunsuri greșite sau inventate („halucinații”)'),
-      option('over_reliance','Over-reliance — people trusting AI output without checking it','Încredere excesivă — oamenii se bazează pe rezultatele AI fără să le verifice'),
-      option('legal','Legal uncertainty — liability, copyright or the EU AI Act','Incertitudine juridică — răspundere, drepturi de autor sau Regulamentul UE privind AI (AI Act)'),
-      option('cost_roi','Costs or unclear return on investment','Costuri sau randament incert al investiției'),
-      option('vendor_dependence','Dependence on AI providers — pricing, service changes or lock-in','Dependența de furnizorii de AI — prețuri, schimbări ale serviciului sau blocarea pe o platformă'),
-      option('skills','Lack of skills or know-how in the team','Lipsa competențelor sau a cunoștințelor în echipă'),
-      option('employee_impact','Impact on employees — resistance, job worries or loss of expertise','Impactul asupra angajaților — rezistență la schimbare, teama pentru locul de muncă sau pierderea expertizei'),
-      option('other','Something else','Altceva'),
-      option('none','No particular concerns','Nu am îngrijorări deosebite',{exclusive:true})
-    ],{structured:true,other:true,compact:true,otherLabel:l('Describe your other concern','Descrie cealaltă îngrijorare'),otherError:l('Describe your other concern (up to 120 characters).','Descrie cealaltă îngrijorare (maximum 120 de caractere).'),helper:l('Select all that apply.','Selectează toate variantele potrivite.')}),
     question('data_to_decisions_interest','workshop','single','How useful would this workshop theme be for you and your company?','Cât de utilă ar fi această temă de workshop pentru tine și compania ta?',[
       option('very_useful','Very useful — I would definitely like to work on this','Foarte utilă — cu siguranță aș vrea să lucrăm pe această temă'),
       option('useful','Useful — this is relevant to my business','Utilă — este relevantă pentru afacerea mea'),
@@ -59,7 +45,7 @@ export const survey = {
       option('not_relevant','Not particularly relevant to my current priorities','Nu este foarte relevantă pentru prioritățile mele actuale'),
       option('another_topic','I would prefer another AI topic','Aș prefera o altă temă legată de AI')
     ],{theme:true}),
-    question('workshop_preferred_topic','workshop','text','What would you prefer to work on?','Pe ce temă ai prefera să lucrăm?',null,{maxLength:3000,condition:{id:'data_to_decisions_interest',values:['another_topic']},number:'8a'}),
+    question('workshop_preferred_topic','workshop','text','What would you prefer to work on?','Pe ce temă ai prefera să lucrăm?',null,{maxLength:3000,condition:{id:'data_to_decisions_interest',values:['another_topic']},number:'7a'}),
     question('workshop_dataset_readiness','workshop','single','Could you bring a real business dataset to use during the workshop?','Ai putea aduce un set de date reale din afacerea ta pentru a-l folosi în workshop?',[
       option('yes','Yes — I already know which dataset I would bring','Da — știu deja ce set de date aș aduce'),
       option('probably','Probably — I need to identify or prepare it','Probabil — trebuie să îl identific sau să îl pregătesc'),
@@ -69,7 +55,7 @@ export const survey = {
     ],{helper:l('A simple Excel or CSV file is enough. The dataset does not need to be large or sophisticated.','Un simplu fișier Excel sau CSV este suficient. Setul de date nu trebuie să fie mare sau complex.'),datasetNotice:true}),
     question('workshop_dataset_type','workshop','multi','What kind of data could you bring?','Ce fel de date ai putea aduce?',[
       option('sales','Sales','Vânzări'),option('customers','Customers','Clienți'),option('finance','Finance','Finanțe'),option('marketing','Marketing','Marketing'),option('operations','Operations','Operațiuni'),option('inventory','Inventory','Stocuri'),option('production','Production','Producție'),option('logistics','Logistics','Logistică'),option('hr','HR','Resurse umane'),option('projects_services','Projects & services','Proiecte și servicii'),option('other','Other','Altele')
-    ],{condition:{id:'workshop_dataset_readiness',values:['yes','probably','maybe']},number:'9a',required:false,structured:true,other:true,datasetNotice:true}),
+    ],{condition:{id:'workshop_dataset_readiness',values:['yes','probably','maybe']},number:'8a',required:false,structured:true,other:true,datasetNotice:true}),
     question('business_data_question','workshop','text','If you could ask one important question about your business and have AI analyse your data to help answer it, what would you ask?','Dacă ai putea pune o singură întrebare importantă despre afacerea ta, iar AI ți-ar analiza datele ca să te ajute să găsești răspunsul, ce ai întreba?',null,{maxLength:3000,helper:l('These are only examples — please use a question that matters to your own business.','Acestea sunt doar exemple — alege o întrebare care contează pentru afacerea ta.'),examples:[l('Why did our margin decline?','De ce ne-a scăzut marja?'),l('Which customers are most valuable?','Care sunt clienții noștri cei mai valoroși?'),l('What drives our sales?','Ce factori ne influențează vânzările?'),l('Where are our operational bottlenecks?','Unde apar blocaje în operațiunile noastre?'),l('Which products are underperforming?','Ce produse au rezultate sub așteptări?')]}),
     question('workshop_other_expectation','workshop','text','Is there anything else you would particularly like us to cover during the AI workshop?','Mai este ceva ce ți-ai dori în mod special să abordăm în workshopul de AI?',null,{required:false,maxLength:3000,helper:l('You can mention another AI topic, task, process, business problem or question that you would particularly like us to address.','Poți menționa o altă temă legată de AI, o sarcină, un proces, o problemă de business sau o întrebare pe care ai vrea să o abordăm.')})
   ]
@@ -110,7 +96,7 @@ export function answerError(q,value,answers={},language='en') {
     if(value.others.some(o=>!accessTypes.some(a=>a.value===o.access)))return error('access');
     return '';
   }
-  if(q.other && choices.includes('other') && (typeof value.other!=='string'||!value.other.trim()||value.other.length>120))return q.otherError?localized(q.otherError,language):q.id==='workshop_dataset_type'?(language==='ro'?'Descrie tipul de date (maximum 120 de caractere).':'Describe the other data type (up to 120 characters).'):error('other');
+  if(q.other && choices.includes('other') && (typeof value.other!=='string'||!value.other.trim()||value.other.length>120))return q.id==='workshop_dataset_type'?(language==='ro'?'Descrie tipul de date (maximum 120 de caractere).':'Describe the other data type (up to 120 characters).'):error('other');
   if(q.other && !choices.includes('other') && value.other!==undefined && value.other!=='')return error('invalid');
   return '';
 }

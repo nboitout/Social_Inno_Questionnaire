@@ -8,8 +8,8 @@ import {responseHeaders,validateHeaders,legacyHeaders} from '../lib/store.js';
 const q=id=>getQuestions().find(q=>q.id===id);
 for(const language of ['en','ro'])test(`${language}: ten-question payload stores separate structured answers`,()=>{
  const data=fixture(language),record=validateSubmission(data);
- assert.equal(getQuestions().length,10);assert.equal(survey.sections.length,4);
- assert.equal(record.survey_version,'2026-09-data-decisions-v4');assert.equal(record.response_language,language);
+ assert.equal(getQuestions().length,11);assert.equal(survey.sections.length,4);
+ assert.equal(record.survey_version,'2026-09-data-decisions-v5');assert.equal(record.response_language,language);
  assert.deepEqual(JSON.parse(record.ai_tools),data.answers.ai_tools);assert.deepEqual(JSON.parse(record.ai_data_access),data.answers.ai_data_access);
  assert.deepEqual(JSON.parse(record.ai_tasks_last_3_months),data.answers.ai_tasks_last_3_months);
  assert.equal(record.business_data_question,data.answers.business_data_question);assert.deepEqual(JSON.parse(record.answers_json),data.answers);
@@ -26,10 +26,10 @@ test('exclusive choices clear selections, access and Other details',()=>{
  value=toggleSelection(q('ai_tools'),value,'claude',true);assert.deepEqual(value,{selected:['claude'],access:{}});
  assert.deepEqual(toggleSelection(q('ai_tasks_last_3_months'),['none'],'analyse_data',true),['analyse_data']);
 });
-test('non-users can skip working style; other respondents must select one; ten main questions remain visible',()=>{
+test('non-users can skip working style; other respondents must select one; eleven main questions remain visible',()=>{
  const data=fixture('en',true);assert.equal(requiredQuestion(q('ai_working_mode'),data.answers),false);assert.doesNotThrow(()=>validateSubmission(data));
  const user=fixture();delete user.answers.ai_working_mode;assert.throws(()=>validateSubmission(user),{status:400});
- assert.equal(getQuestions(data.answers).filter(q=>!q.condition).length,10);
+ assert.equal(getQuestions(data.answers).filter(q=>!q.condition).length,11);
 });
 test('server rejects invalid, old-version, extra, duplicate and oversized answers',()=>{
  const make=()=>fixture();let data=make();data.version='2026-09-draft-1';assert.throws(()=>validateSubmission(data),{code:'version'});
@@ -77,7 +77,7 @@ test('Q3 accepts combined file sources, stores them and preserves the previous q
  assert.ok(formatAnswer(getQuestions().find(q=>q.id==='ai_data_access'),value).includes('on my computer'));
  assert.ok(answerError(q('ai_data_access'),[]));assert.ok(answerError(q('ai_data_access'),['local_files','local_files']));
  const old=(await import('../public/survey-v2.js')).survey;assert.equal(old.questions[2].id,'desktop_ai_apps');assert.notEqual(old.version,survey.version);
- assert.ok(responseHeaders.includes('desktop_ai_apps'));assert.equal(responseHeaders.at(-1),'ai_data_access');
+ assert.ok(responseHeaders.includes('desktop_ai_apps'));assert.equal(responseHeaders.at(-2),'ai_data_access');assert.equal(responseHeaders.at(-1),'ai_concerns');
 });
 
 test('several Other tools retain individual access types and are cleared with None',()=>{
@@ -96,4 +96,21 @@ test('company adoption accepts multiple choices and None is exclusive; agentic a
  assert.deepEqual(toggleSelection(q('company_ai_adoption'),data.answers.company_ai_adoption,'not_used',true),['not_used']);
  assert.ok(answerError(q('company_ai_adoption'),['not_used','systematic_teams']));assert.ok(answerError(q('company_ai_adoption'),'systematic_teams'));
  assert.ok(answerError(q('ai_working_mode'),'multi_step_agentic'));assert.equal(q('ai_working_mode').options.length,4);
+});
+
+test('AI concerns: multi-select with exclusive none and a described Other, in both languages',()=>{
+ const q=survey.questions.find(q=>q.id==='ai_concerns');assert.equal(q.section,'company');assert.equal(q.number,7);
+ assert.equal(survey.questions.findIndex(x=>x.id==='ai_concerns'),survey.questions.findIndex(x=>x.id==='company_ai_adoption')+1);
+ for(const o of q.options){assert.ok(o.label.en&&o.label.ro,o.value);}
+ const data=fixture();
+ data.answers.ai_concerns={selected:['security','accuracy','privacy']};assert.doesNotThrow(()=>validateSubmission(data));
+ data.answers.ai_concerns={selected:['none']};assert.doesNotThrow(()=>validateSubmission(data));
+ for(const bad of [{selected:[]},{selected:['none','security']},{selected:['other']},{selected:['other'],other:' '},{selected:['other'],other:'x'.repeat(121)},{selected:['security'],other:'stray'},['security'],{selected:['unknown']}]){data.answers.ai_concerns=bad;assert.throws(()=>validateSubmission(data),{status:400});}
+ data.answers.ai_concerns={selected:['other'],other:'Supplier contracts'};const record=validateSubmission(data);assert.deepEqual(JSON.parse(record.ai_concerns),data.answers.ai_concerns);
+ assert.equal(formatAnswer(getQuestions().find(x=>x.id==='ai_concerns'),data.answers.ai_concerns,'en'),'Something else: Supplier contracts');
+ assert.match(answerError(q,{selected:['other'],other:''},{},'ro'),/îngrijorare/);assert.match(answerError(q,{selected:['other'],other:''},{},'en'),/concern/);
+});
+test('v4 responses remain summarised alongside v5',()=>{
+ const record=validateSubmission(fixture()),old={...record,submission_id:'v4',survey_version:'2026-09-data-decisions-v4'};
+ const m=summarize([record,old],[]);assert.equal(m.currentResponses,2);assert.equal(m.legacyResponses,0);
 });
