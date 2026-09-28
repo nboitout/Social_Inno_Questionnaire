@@ -40,23 +40,49 @@ test('Google Sheets adapter writes RAW structured columns, reads them back and t
 test('Google Sheets adapter appends a missing current column to the right of the existing headers before writing',async()=>{
  const oldFetch=global.fetch;const {privateKey}=generateKeyPairSync('rsa',{modulusLength:2048});
  process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL='test@example.invalid';process.env.GOOGLE_PRIVATE_KEY=privateKey.export({type:'pkcs8',format:'pem'});process.env.SURVEY_LIVE='true';
- // The live v4 sheet: every column except ai_concerns.
- let headers=responseHeaders.filter(h=>h!=='ai_concerns');const puts=[],rows=[];
+ // The live v4 sheet: every column except ai_concerns, in a grid exactly as wide as its headers (A:BC), like production.
+ let headers=responseHeaders.filter(h=>h!=='ai_concerns'),columnCount=headers.length;const puts=[],rows=[],widened=[];
+ const columnIndex=ref=>[...ref.replace(/[0-9]/g,'')].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);
+ // Google rejects values written outside the grid with 400 "exceeds grid limits".
+ const outside=range=>columnIndex(range.split('!')[1].split(':').at(-1))>columnCount;
  global.fetch=async(url,options)=>{
   const u=decodeURIComponent(url);
   if(url==='https://oauth2.googleapis.com/token')return Response.json({access_token:'test-token',expires_in:3600});
-  if(options?.method==='PUT'){puts.push({range:u.split('/values/')[1].split('?')[0],values:JSON.parse(options.body).values});headers=[...headers,...JSON.parse(options.body).values[0]];return Response.json({});}
-  if(url.includes(':append?')){rows.push(...JSON.parse(options.body).values);return Response.json({updates:{updatedRows:1}});}
+  if(u.includes('?fields=sheets.properties'))return Response.json({sheets:[{properties:{sheetId:0,title:'Responses',gridProperties:{columnCount}}},{properties:{sheetId:7,title:'Visits',gridProperties:{columnCount:5}}}]});
+  if(u.endsWith(':batchUpdate')){const {appendDimension}=JSON.parse(options.body).requests[0];assert.equal(appendDimension.sheetId,0);assert.equal(appendDimension.dimension,'COLUMNS');widened.push(appendDimension.length);columnCount+=appendDimension.length;return Response.json({});}
+  if(options?.method==='PUT'){const range=u.split('/values/')[1].split('?')[0];if(outside(range))return new Response('{"error":{"code":400,"message":"exceeds grid limits"}}',{status:400});puts.push({range,values:JSON.parse(options.body).values});headers=[...headers,...JSON.parse(options.body).values[0]];return Response.json({});}
+  if(url.includes(':append?')){const values=JSON.parse(options.body).values;if(values[0].length>columnCount)return new Response('{}',{status:400});rows.push(...values);return Response.json({updates:{updatedRows:1}});}
   if(u.includes('Responses!1:1'))return Response.json({values:[headers]});
   if(u.includes('Responses!A2:'))return Response.json({values:rows});
   throw new Error('Unexpected request');
  };
  try{
   const payload=fixture();payload.answers.ai_concerns={selected:['security','accuracy']};const res=response();await submit(req(payload),res);assert.equal(res.data.ok,true);
-  assert.equal(puts.length,1);assert.equal(puts[0].range,'Responses!BD1:BD1');assert.deepEqual(puts[0].values,[['ai_concerns']]);
+  assert.deepEqual(widened,[1]);assert.equal(columnCount,56);assert.equal(puts.length,1);assert.equal(puts[0].range,'Responses!BD1:BD1');assert.deepEqual(puts[0].values,[['ai_concerns']]);
   assert.equal(rows[0].length,headers.length);assert.deepEqual(JSON.parse(rows[0][headers.indexOf('ai_concerns')]),payload.answers.ai_concerns);
   assert.equal(rows[0][headers.indexOf('first_name')],payload.participant.first_name);
-  const again=response();const second=fixture();await submit(req(second),again);assert.equal(again.data.ok,true);assert.equal(puts.length,1);
+  const again=response();const second=fixture();await submit(req(second),again);assert.equal(again.data.ok,true);assert.equal(puts.length,1);assert.deepEqual(widened,[1]);
  }
  finally{global.fetch=oldFetch;delete process.env.SURVEY_LIVE;delete process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;delete process.env.GOOGLE_PRIVATE_KEY;}
+});
+
+test('a response is still saved, complete in answers_json, when a new column cannot be added',async()=>{
+ const oldFetch=global.fetch,oldError=console.error;const {privateKey}=generateKeyPairSync('rsa',{modulusLength:2048});
+ process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL='test@example.invalid';process.env.GOOGLE_PRIVATE_KEY=privateKey.export({type:'pkcs8',format:'pem'});process.env.SURVEY_LIVE='true';
+ const headers=responseHeaders.filter(h=>h!=='ai_concerns'),rows=[],logged=[];console.error=(...args)=>logged.push(args.join(' '));
+ global.fetch=async(url,options)=>{
+  const u=decodeURIComponent(url);
+  if(url==='https://oauth2.googleapis.com/token')return Response.json({access_token:'test-token',expires_in:3600});
+  if(u.includes('?fields=sheets.properties'))return new Response('{}',{status:403});
+  if(url.includes(':append?')){rows.push(...JSON.parse(options.body).values);return Response.json({updates:{updatedRows:1}});}
+  if(u.includes('Responses!1:1'))return Response.json({values:[headers]});
+  if(u.includes('Responses!A2:'))return Response.json({values:rows});
+  throw new Error('Unexpected request');
+ };
+ try{
+  const payload=fixture();payload.answers.ai_concerns={selected:['privacy']};const res=response();await submit(req(payload),res);assert.equal(res.data.ok,true);
+  assert.equal(rows.length,1);assert.equal(rows[0].length,headers.length);assert.deepEqual(JSON.parse(rows[0][headers.indexOf('answers_json')]).ai_concerns,{selected:['privacy']});
+  assert.ok(logged.some(l=>l.includes('could not add Responses columns ai_concerns')));
+ }
+ finally{global.fetch=oldFetch;console.error=oldError;delete process.env.SURVEY_LIVE;delete process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;delete process.env.GOOGLE_PRIVATE_KEY;}
 });
