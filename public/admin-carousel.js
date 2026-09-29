@@ -51,7 +51,17 @@ export function mountCarousel(target, slides, {label='Survey answers'}={}) {
     shell.classList.toggle('carousel-quotes',slide.quotes);
     shell.classList.remove('carousel-tight');
     if(viewport.clientHeight<160)shell.classList.add('carousel-tight');
+    shell.classList.remove('dense-1','dense-2','dense-3');
     items.replaceChildren();pages=[];
+    // Answer summaries keep every option on one screen: tighten the layout step by step before falling back to extra panels.
+    if(!slide.quotes&&slide.blocks.length){
+      for(let level=0;level<=3;level++){
+        shell.classList.remove('dense-1','dense-2','dense-3');
+        if(level)shell.classList.add(`dense-${level}`);
+        items.replaceChildren(...slide.blocks.map(block=>block.cloneNode(true)));
+        if(fits()){pages=[[...items.children]];items.replaceChildren();panelIndex=0;show();return;}
+      }
+    }
     let page=[];
     const finish=()=>{if(page.length)pages.push(page);page=[];items.replaceChildren();};
     for(const block of slide.blocks){

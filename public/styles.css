@@ -354,3 +354,13 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--olive),#
 }
 /* Compact grids stretch options to equal height; an option with an open details panel keeps its natural height so the panel stays attached. */
 .compact-options .field-option:has(.option-details) .option{height:auto}
+.dense-1 .carousel-items{gap:8px 16px}
+.dense-1 .carousel-item.distribution{padding:7px 10px}
+.dense-1 .carousel-item progress{height:5px;margin-top:5px}
+.dense-1 .carousel-item .distribution-detail{margin-top:4px}
+.dense-2 .carousel-items,.dense-3 .carousel-items{gap:6px 12px}
+.dense-2 .carousel-item.distribution,.dense-3 .carousel-item.distribution{padding:6px 9px}
+.dense-2 .carousel-item .distribution-label,.dense-3 .carousel-item .distribution-label{font-size:13px;line-height:1.25}
+.dense-2 .carousel-item progress,.dense-3 .carousel-item progress{height:4px;margin-top:4px}
+.dense-2 .carousel-item .distribution-detail,.dense-3 .carousel-item .distribution-detail{font-size:11px;line-height:1.25;margin-top:3px}
+@media(min-width:761px){.dense-1 .carousel-items,.dense-2 .carousel-items{grid-template-columns:repeat(3,minmax(0,1fr))}.dense-3 .carousel-items{grid-template-columns:repeat(4,minmax(0,1fr))}}
