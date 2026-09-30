@@ -23,7 +23,7 @@ test('complete activity history and durable browser exclusion',async()=>{
   const excluded=activityCookie(true).split(';')[0],included=activityCookie(false).split(';')[0];
   assert.equal(activityPreference(req('GET',{},`unrelated=1;${excluded}`)),true);
   assert.equal(activityPreference(req('GET',{},'social_inno_activity_excluded=invalid')),null);
-  for(let i=0;i<137;i++)await appendRow('Visits',{event_id:randomUUID(),session_id:randomUUID(),event:i%2?'start':'visit',recorded_at:new Date(Date.UTC(2026,8,1,0,i)).toISOString(),path:'/'});
+  for(let i=0;i<137;i++)await appendRow('Visits',{event_id:randomUUID(),session_id:randomUUID(),event:i%2?'start':'visit',recorded_at:new Date(Date.UTC(2026,8,29,0,i)).toISOString(),path:'/'});
   const events=await readRows('Visits');await appendRow('Visits',events[0]);
   let res=response();await admin(req('GET',{},session),res);
   assert.equal(res.data.events.length,137,'history must include events beyond the former 100-row cap');

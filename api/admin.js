@@ -4,6 +4,9 @@ import { activityPreference, activityCookie } from '../lib/activity.js';
 import { readRows, uniqueRows, configured, live, demoMode } from '../lib/store.js';
 import { survey } from '../public/survey-config.js';
 import { survey as v4 } from '../public/survey-v4.js';
+// Midnight in Europe/Bucharest (UTC+03:00 on this date), inclusive.
+const reportingStart='2026-09-29T00:00:00+03:00';
+const reportingStartMs=Date.parse(reportingStart);
 export function summarize(responses,events){
  responses=uniqueRows(responses,'submission_id');events=uniqueRows(events,'event_id');
  const visits=events.filter(e=>e.event==='visit'),sessions=new Set(visits.map(e=>e.session_id)),starts=new Set(events.filter(e=>e.event==='start').map(e=>e.session_id));
@@ -25,7 +28,11 @@ export default route(async(req,res)=>{
  let responses=[],events=[];
  // Signed-in admins see the storage failure category (never credentials) instead of a generic outage.
  if(configured())try{[responses,events]=await Promise.all([readRows('Responses'),readRows('Visits')]);}catch(error){console.error('API failure:',error.message);throw new HttpError(503,`Signed in, but Google Sheets could not be read: ${error.message}.`);}
+ // Filter before both aggregation and the payload used by summaries, tables and CSV export.
+ // Missing/invalid dates cannot establish membership in the reporting period.
+ responses=responses.filter(row=>Date.parse(row.submitted_at)>=reportingStartMs);
+ events=events.filter(row=>Date.parse(row.recorded_at)>=reportingStartMs);
  const activityExcluded=activityPreference(req)??true;
  if(activityPreference(req)===null)res.setHeader('Set-Cookie',activityCookie(true));
- res.json({configured:configured(),live:live(),demo:demoMode(),activityExcluded,metrics:summarize(responses,events),responses:uniqueRows(responses,'submission_id').reverse(),events:uniqueRows(events,'event_id').sort((a,b)=>String(b.recorded_at).localeCompare(String(a.recorded_at)))});
+ res.json({configured:configured(),live:live(),demo:demoMode(),activityExcluded,reportingStart,metrics:summarize(responses,events),responses:uniqueRows(responses,'submission_id').reverse(),events:uniqueRows(events,'event_id').sort((a,b)=>Date.parse(b.recorded_at)-Date.parse(a.recorded_at))});
 },'The admin service is temporarily unavailable. Please try again.');
