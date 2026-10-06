@@ -23,7 +23,7 @@ function textFragment(source, start, end) {
 export function mountCarousel(target, slides, {label='Survey answers'}={}) {
   let questionIndex=0,panelIndex=0,pages=[],frame,gesture,disposed=false,previousSize='';
   const shell=document.createElement('section');
-  shell.className='answer-carousel';
+  shell.className='answer-carousel carousel-readable';
   shell.setAttribute('role','region');shell.setAttribute('aria-roledescription','carousel');shell.setAttribute('aria-label',label);
   shell.innerHTML=`<div class="carousel-toolbar"><label class="carousel-picker"><span>Jump to question</span><select aria-label="${label==='Survey answers'?'Summary question':'Response question'}"></select></label><button type="button" class="secondary carousel-expand">Full screen</button></div><div class="carousel-heading"></div><div class="carousel-viewport" tabindex="0" aria-label="Answers; swipe left or right, or use the arrow keys"><div class="carousel-items" role="list"></div></div><div class="carousel-footer"><button type="button" class="secondary carousel-previous" aria-label="Previous answer panel">← Previous</button><div class="carousel-position" role="status" aria-live="polite" aria-atomic="true"></div><button type="button" class="secondary carousel-next" aria-label="Next answer panel">Next →</button></div><p class="carousel-hint">Swipe or use ← → · Long answers continue on the next panel.</p>`;
   target.replaceChildren(shell);
@@ -49,12 +49,14 @@ export function mountCarousel(target, slides, {label='Survey answers'}={}) {
     shell.dataset.question=slide.id;
     heading.replaceChildren(slide.header.cloneNode(true));
     shell.classList.toggle('carousel-quotes',slide.quotes);
-    shell.classList.remove('carousel-tight');
+    shell.classList.remove('carousel-tight','carousel-minimum');
     if(viewport.clientHeight<160)shell.classList.add('carousel-tight');
     shell.classList.remove('dense-1','dense-2','dense-3');
     items.replaceChildren();pages=[];
-    // Answer summaries keep every option on one screen: tighten the layout step by step before falling back to extra panels.
-    if(!slide.quotes&&slide.blocks.length){
+    // On presentation-sized screens, preserve large text and paginate instead of shrinking it.
+    // Small screens retain the compact layout for everyday administration.
+    const presentationSize=window.matchMedia('(min-width:761px) and (min-height:501px)').matches;
+    if(!presentationSize&&!slide.quotes&&slide.blocks.length){
       for(let level=0;level<=3;level++){
         shell.classList.remove('dense-1','dense-2','dense-3');
         if(level)shell.classList.add(`dense-${level}`);
