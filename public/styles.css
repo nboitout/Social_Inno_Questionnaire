@@ -365,28 +365,11 @@ progress::-webkit-progress-value{background:linear-gradient(90deg,var(--olive),#
 .dense-2 .carousel-item .distribution-detail,.dense-3 .carousel-item .distribution-detail{font-size:11px;line-height:1.25;margin-top:3px}
 @media(min-width:761px){.dense-1 .carousel-items,.dense-2 .carousel-items{grid-template-columns:repeat(3,minmax(0,1fr))}.dense-3 .carousel-items{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
-/* Audience view: preserve readable type and let the carousel paginate crowded questions. */
+/* A modest desktop type increase, keeping the original compact carousel layout. */
 @media(min-width:761px) and (min-height:501px){
- .answer-carousel.carousel-readable{--answer-size:clamp(24px,1.9vw,30px);--answer-detail-size:18px;gap:14px}
- .carousel-dialog .answer-carousel.carousel-readable{--answer-size:clamp(30px,2.2vw,40px);--answer-detail-size:22px;max-width:1800px}
- .carousel-readable .carousel-heading h2{font-size:clamp(30px,2.4vw,44px);line-height:1.15}
- .carousel-readable .carousel-heading .question-number{font-size:18px}
- .carousel-readable .carousel-heading .question-text{font-size:22px;line-height:1.35}
- .carousel-readable .carousel-heading .field-hint{font-size:16px}
- .answer-carousel.carousel-readable .carousel-items{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
- .answer-carousel.carousel-readable.carousel-quotes .carousel-items{grid-template-columns:1fr}
- .answer-carousel.carousel-readable .carousel-item.distribution{padding:14px 16px}
- .carousel-readable .carousel-item .distribution-label{font-size:var(--answer-size);line-height:1.3;gap:18px}
- .carousel-readable .carousel-item .distribution-label strong{font-size:inherit;font-variant-numeric:tabular-nums}
- .carousel-readable .carousel-item .share{color:var(--ink);font-weight:600;margin-left:14px}
- .carousel-readable .carousel-item progress{height:10px;margin-top:12px}
- .carousel-readable .carousel-item .distribution-detail{font-size:var(--answer-detail-size);line-height:1.4;color:var(--ink);margin-top:8px}
- .carousel-readable.carousel-quotes .carousel-item p{font-size:var(--answer-size);line-height:1.4}
- .carousel-readable.carousel-quotes .carousel-item small{font-size:var(--answer-detail-size);color:var(--ink)}
- .carousel-readable .carousel-item.empty{font-size:22px}
- .carousel-readable .carousel-picker{max-width:1000px;font-size:14px}
- .carousel-readable .carousel-picker select{font-size:18px}
- .carousel-readable .carousel-footer button,.carousel-readable .carousel-toolbar button{font-size:18px}
- .carousel-readable .carousel-position{font-size:16px}
- .carousel-readable .carousel-hint,.carousel-readable .answer-continuation:before{font-size:14px}
+ .answer-carousel .carousel-item .distribution-label{font-size:16px}
+ .answer-carousel .carousel-item .distribution-detail{font-size:13px}
+ .answer-carousel.carousel-quotes .carousel-item p{font-size:18px}
+ .answer-carousel.carousel-quotes .carousel-item small{font-size:13px}
+ .answer-carousel .carousel-heading .question-text{font-size:16px}
 }
